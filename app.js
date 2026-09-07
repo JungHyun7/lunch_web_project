@@ -954,9 +954,16 @@ function resetToDefault() {
 }
 
 function resetWeek() {
-  if (confirm("이번 주 당첨 기록을 초기화하시겠습니까? (월간 달력 기록은 유지됩니다)")) {
-    weeklyWinners = { Mon: null, Tue: null, Wed: null, Thu: null, Fri: null };
+  if (confirm("이번 주 당첨 기록을 초기화하시겠습니까? (이번 주 월간 달력 기록도 함께 연동되어 초기화됩니다)")) {
+    const { weekDates } = getWeekDates();
+    DAYS.forEach(dayKey => {
+      weeklyWinners[dayKey] = null;
+      if (weekDates[dayKey]) {
+        delete monthlyHistory[weekDates[dayKey].isoDateStr];
+      }
+    });
     saveWeeklyWinners();
+    saveMonthlyHistory();
     renderUI();
   }
 }
@@ -1064,12 +1071,40 @@ function saveEditRestaurant(e) {
 
   const index = restaurants.findIndex(r => r.id === id || r.name === id);
   if (index !== -1) {
+    const oldName = restaurants[index].name;
+
     restaurants[index].name = name;
     restaurants[index].category = category;
     restaurants[index].price = price;
     restaurants[index].mainDish = mainDish;
 
+    // 1. Sync updated restaurant details to weeklyWinners automatically
+    DAYS.forEach(dayKey => {
+      const winner = weeklyWinners[dayKey];
+      if (winner && winner.type !== "holiday" && (winner.name === oldName || winner.restaurantName === oldName)) {
+        weeklyWinners[dayKey].name = name;
+        weeklyWinners[dayKey].restaurantName = name;
+        weeklyWinners[dayKey].category = category;
+        weeklyWinners[dayKey].price = price;
+        weeklyWinners[dayKey].mainDish = mainDish;
+      }
+    });
+
+    // 2. Sync updated restaurant details to monthlyHistory automatically
+    Object.keys(monthlyHistory).forEach(dateStr => {
+      const rec = monthlyHistory[dateStr];
+      if (rec && rec.type !== "holiday" && (rec.restaurantName === oldName || rec.name === oldName)) {
+        monthlyHistory[dateStr].restaurantName = name;
+        monthlyHistory[dateStr].name = name;
+        monthlyHistory[dateStr].category = category;
+        monthlyHistory[dateStr].price = price;
+        monthlyHistory[dateStr].mainDish = mainDish;
+      }
+    });
+
     saveRestaurantList();
+    saveWeeklyWinners();
+    saveMonthlyHistory();
     renderUI();
     closeEditRestaurantModal();
   }
@@ -1114,7 +1149,6 @@ function closeWinnerModal() {
 
 window.closeManualModal = closeManualModal;
 window.closeWinnerModal = closeWinnerModal;
-window.clearManualEntry = clearManualEntry;
 
 function saveManualEntry() {
   if (!selectedManualDay) return;
@@ -1123,20 +1157,26 @@ function saveManualEntry() {
   const isWeekDayKey = DAYS.includes(selectedManualDay);
   const { weekDates } = getWeekDates();
   
-  const targetIsoDate = isWeekDayKey ? weekDates[selectedManualDay].isoDateStr : selectedManualDay;
+  let targetIsoDate = isWeekDayKey ? weekDates[selectedManualDay].isoDateStr : selectedManualDay;
+  let targetWeekDayKey = isWeekDayKey ? selectedManualDay : null;
+
+  // If selected date matches any day in current week, sync both ways
+  if (!targetWeekDayKey) {
+    targetWeekDayKey = DAYS.find(d => weekDates[d] && weekDates[d].isoDateStr === selectedManualDay);
+  }
 
   if (isHoliday) {
-    if (isWeekDayKey) {
-      weeklyWinners[selectedManualDay] = { type: "holiday" };
+    const holidayData = { type: "holiday" };
+    if (targetWeekDayKey) {
+      weeklyWinners[targetWeekDayKey] = holidayData;
       saveWeeklyWinners();
     }
-    monthlyHistory[targetIsoDate] = { type: "holiday" };
+    monthlyHistory[targetIsoDate] = holidayData;
     saveMonthlyHistory();
   } else {
     const inputName = manualRestaurantInput.value.trim();
     if (!inputName) return;
 
-    // Find matched restaurant details if exists
     const matched = restaurants.find(r => r.name === inputName);
     const entryData = {
       type: "manual",
@@ -1147,8 +1187,8 @@ function saveManualEntry() {
       mainDish: matched ? matched.mainDish : ""
     };
 
-    if (isWeekDayKey) {
-      weeklyWinners[selectedManualDay] = entryData;
+    if (targetWeekDayKey) {
+      weeklyWinners[targetWeekDayKey] = entryData;
       saveWeeklyWinners();
     }
     monthlyHistory[targetIsoDate] = entryData;
@@ -1164,10 +1204,16 @@ function clearManualEntry() {
 
   const isWeekDayKey = DAYS.includes(selectedManualDay);
   const { weekDates } = getWeekDates();
-  const targetIsoDate = isWeekDayKey ? weekDates[selectedManualDay].isoDateStr : selectedManualDay;
+  
+  let targetIsoDate = isWeekDayKey ? weekDates[selectedManualDay].isoDateStr : selectedManualDay;
+  let targetWeekDayKey = isWeekDayKey ? selectedManualDay : null;
 
-  if (isWeekDayKey) {
-    weeklyWinners[selectedManualDay] = null;
+  if (!targetWeekDayKey) {
+    targetWeekDayKey = DAYS.find(d => weekDates[d] && weekDates[d].isoDateStr === selectedManualDay);
+  }
+
+  if (targetWeekDayKey) {
+    weeklyWinners[targetWeekDayKey] = null;
     saveWeeklyWinners();
   }
   delete monthlyHistory[targetIsoDate];

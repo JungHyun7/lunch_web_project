@@ -705,13 +705,43 @@ let currentTargetAngle = 0;
 let animationFrameId = null;
 let comboCount = 0;
 let currentChosenWinner = null;
+let spinStartTime = null;
+let spinDuration = 4200; // 4.2 seconds for realistic dramatic slow down
+let spinStartAngle = 0;
+let audioCtx = null;
+
+function playTickSound() {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.035);
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.035);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.035);
+  } catch (e) {
+    // audio play ignored if muted/blocked
+  }
+}
 
 function triggerPointerTick(isBoost = false) {
   const wheelPointer = document.querySelector(".wheel-pointer");
-  if (!wheelPointer) return;
-  wheelPointer.classList.remove("tick-wobble", "boost-wobble");
-  void wheelPointer.offsetWidth;
-  wheelPointer.classList.add(isBoost ? "boost-wobble" : "tick-wobble");
+  if (wheelPointer) {
+    wheelPointer.classList.remove("tick-wobble", "boost-wobble");
+    void wheelPointer.offsetWidth;
+    wheelPointer.classList.add(isBoost ? "boost-wobble" : "tick-wobble");
+  }
+  playTickSound();
 }
 
 function spinWheel() {
@@ -740,42 +770,53 @@ function spinWheel() {
   let deltaAngle = desiredFinalAngle - currentAngle;
   if (deltaAngle <= 0) deltaAngle += Math.PI * 2;
 
-  const extraRounds = Math.PI * 2 * (6 + Math.floor(Math.random() * 4));
+  const extraRounds = Math.PI * 2 * (7 + Math.floor(Math.random() * 3));
 
   if (isSpinning) {
     comboCount++;
+    spinDuration = Math.max(2500, 4200 - comboCount * 400);
     currentTargetAngle = currentAngle + deltaAngle + extraRounds + (Math.PI * 2 * comboCount * 2);
     triggerPointerTick(true);
-    updateSpinBtnText(`🔥 연타 콤보 x${comboCount}! (새 식당 추첨!)`);
+    updateSpinBtnText(`🔥 연타 콤보 x${comboCount}! (가속 추첨!)`);
     return;
   }
 
   isSpinning = true;
   comboCount = 1;
+  spinDuration = 4200;
   if (wheelWrapper) wheelWrapper.classList.add("is-spinning-active");
   updateSpinBtnText("🔥 룰렛 돌리기! (연타 가능!)");
 
+  spinStartAngle = currentAngle;
   currentTargetAngle = currentAngle + deltaAngle + extraRounds;
+  spinStartTime = performance.now();
   let lastSectorIndex = -1;
 
-  function animate() {
-    const distanceRemaining = currentTargetAngle - currentAngle;
+  // Quad Ease Out for smooth fast spin and dramatic slowing down ticks
+  function easeOutQuart(t) {
+    return 1 - Math.pow(1 - t, 4);
+  }
 
-    if (distanceRemaining > 0.003) {
-      const speed = Math.max(distanceRemaining * 0.045, 0.0015);
-      currentAngle += speed;
+  function animate(now) {
+    const elapsed = now - spinStartTime;
+    const progress = Math.min(elapsed / spinDuration, 1);
+    const easedProgress = easeOutQuart(progress);
 
-      const normalizedAngle = ((currentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-      const currentSectorUnderPointer = Math.floor(
-        ((3 * Math.PI / 2 - normalizedAngle + Math.PI * 2 * 10) % (Math.PI * 2)) / sliceAngle
-      );
+    currentAngle = spinStartAngle + (currentTargetAngle - spinStartAngle) * easedProgress;
 
-      if (currentSectorUnderPointer !== lastSectorIndex) {
-        lastSectorIndex = currentSectorUnderPointer;
-        triggerPointerTick();
-      }
+    const normalizedAngle = ((currentAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    const currentSectorUnderPointer = Math.floor(
+      ((3 * Math.PI / 2 - normalizedAngle + Math.PI * 2 * 10) % (Math.PI * 2)) / sliceAngle
+    );
 
-      drawWheel();
+    if (currentSectorUnderPointer !== lastSectorIndex) {
+      lastSectorIndex = currentSectorUnderPointer;
+      triggerPointerTick();
+    }
+
+    drawWheel();
+
+    if (progress < 1) {
       animationFrameId = requestAnimationFrame(animate);
     } else {
       currentAngle = currentTargetAngle;

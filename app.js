@@ -149,17 +149,19 @@ function formatPrice(num) {
 // ==========================================================================
 // State Storage & Load Operations
 // ==========================================================================
+let isFirebaseLoaded = false;
+
 function loadState() {
   // 1. Load Restaurant List
   const savedList = localStorage.getItem(STORAGE_KEY_LIST);
-  if (savedList) {
+  if (savedList !== null) {
     try {
       restaurants = JSON.parse(savedList);
     } catch (e) {
-      restaurants = [...DEFAULT_RESTAURANTS];
+      restaurants = [];
     }
   } else {
-    restaurants = [...DEFAULT_RESTAURANTS];
+    restaurants = [];
   }
 
   // 2. Load History
@@ -212,6 +214,7 @@ function getCleanDbUrl() {
 }
 
 function applyFirebaseData(data) {
+  isFirebaseLoaded = true;
   if (!data || typeof data !== "object") return;
 
   // 1. Restaurants processing (with empty marker handling)
@@ -225,9 +228,12 @@ function applyFirebaseData(data) {
     }
     localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
   } else if (data.hasSynced) {
-    // If Firebase DB was synced before but 'restaurants' key was deleted due to empty array nullification
     restaurants = [];
     localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+  } else if (localStorage.getItem(STORAGE_KEY_LIST) === null) {
+    restaurants = [...DEFAULT_RESTAURANTS];
+    localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+    syncToFirebase();
   }
 
   // 2. Weekly winners processing
@@ -257,9 +263,10 @@ function initFirebase() {
   const dbStatusText = document.getElementById("dbStatusText");
 
   const baseUrl = getCleanDbUrl();
-  const jsonUrl = `${baseUrl}/lunch_app.json`;
+  const jsonUrlWithCacheBust = `${baseUrl}/lunch_app.json?t=${Date.now()}`;
+  const jsonUrlRaw = `${baseUrl}/lunch_app.json`;
 
-  fetch(jsonUrl)
+  fetch(jsonUrlWithCacheBust)
     .then(response => {
       if (!response.ok) throw new Error("HTTP error " + response.status);
       return response.json();
@@ -268,6 +275,11 @@ function initFirebase() {
       if (data) {
         applyFirebaseData(data);
       } else {
+        isFirebaseLoaded = true;
+        if (localStorage.getItem(STORAGE_KEY_LIST) === null) {
+          restaurants = [...DEFAULT_RESTAURANTS];
+          localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+        }
         syncToFirebase();
       }
 
@@ -277,11 +289,17 @@ function initFirebase() {
         dbStatusText.textContent = "실시간 DB 연결됨";
       }
 
-      setupEventSource(jsonUrl);
+      setupEventSource(jsonUrlRaw);
     })
     .catch(err => {
       console.warn("Firebase REST fetch fallback to local:", err);
       isDbOnline = false;
+      isFirebaseLoaded = true;
+      if (localStorage.getItem(STORAGE_KEY_LIST) === null && restaurants.length === 0) {
+        restaurants = [...DEFAULT_RESTAURANTS];
+        localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+        renderUI();
+      }
       if (dbStatusBadge) {
         dbStatusBadge.className = "db-status-badge offline";
         dbStatusText.textContent = "로컬 모드";
@@ -312,6 +330,8 @@ function setupEventSource(jsonUrl) {
 
 function syncToFirebase() {
   if (typeof fetch === "undefined") return;
+  if (!isFirebaseLoaded) return; // Prevent overwriting DB before initial fetch completes
+
   const baseUrl = getCleanDbUrl();
   const jsonUrl = `${baseUrl}/lunch_app.json`;
 
@@ -344,6 +364,8 @@ function syncToFirebase() {
       console.warn("Sync to Firebase failed:", err);
     });
 }
+
+
 
 function openDbModal() {
   const dbModal = document.getElementById("dbModal");

@@ -734,13 +734,29 @@ function playTickSound() {
   }
 }
 
-function triggerPointerTick(isBoost = false) {
+let pointerTickTimeout = null;
+
+function resetPointer() {
   const wheelPointer = document.querySelector(".wheel-pointer");
   if (wheelPointer) {
-    wheelPointer.classList.remove("tick-wobble", "boost-wobble");
-    void wheelPointer.offsetWidth;
-    wheelPointer.classList.add(isBoost ? "boost-wobble" : "tick-wobble");
+    if (pointerTickTimeout) clearTimeout(pointerTickTimeout);
+    wheelPointer.style.transform = "translateX(-50%) rotate(0deg)";
   }
+}
+
+function triggerPointerTick(isBoost = false) {
+  const wheelPointer = document.querySelector(".wheel-pointer");
+  if (!wheelPointer) return;
+
+  if (pointerTickTimeout) clearTimeout(pointerTickTimeout);
+
+  const angle = isBoost ? 22 : 12;
+  wheelPointer.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+
+  pointerTickTimeout = setTimeout(() => {
+    wheelPointer.style.transform = "translateX(-50%) rotate(0deg)";
+  }, 65);
+
   playTickSound();
 }
 
@@ -821,6 +837,7 @@ function spinWheel() {
     } else {
       currentAngle = currentTargetAngle;
       drawWheel();
+      resetPointer();
 
       isSpinning = false;
       comboCount = 0;

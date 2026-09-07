@@ -1656,15 +1656,16 @@ body {
   position: absolute;
   top: -24px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) rotate(0deg);
   width: 38px;
   height: 52px;
   background: #ff4757;
   clip-path: polygon(50% 100%, 0 0, 100% 0);
   z-index: 25;
   filter: drop-shadow(0px 4px 0px #171717);
-  transform-origin: 50% 0%;
+  transform-origin: 50% 5%;
   pointer-events: none;
+  transition: transform 0.06s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .wheel-pointer::before {
@@ -1678,45 +1679,6 @@ body {
   background: #ffd84d;
   border-radius: 50%;
   border: 2px solid #171717;
-}
-
-/* Dynamic Pointer Bounce & Tick Wobble Animations */
-.wheel-pointer.tick-wobble {
-  animation: pointerWobble 0.16s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-}
-
-.wheel-pointer.boost-wobble {
-  animation: pointerBoostWobble 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes pointerWobble {
-  0% {
-    transform: translateX(-50%) rotate(0deg) scale(1);
-  }
-  35% {
-    transform: translateX(-50%) rotate(-28deg) scale(1.25);
-  }
-  75% {
-    transform: translateX(-50%) rotate(10deg) scale(1.1);
-  }
-  100% {
-    transform: translateX(-50%) rotate(0deg) scale(1);
-  }
-}
-
-@keyframes pointerBoostWobble {
-  0% {
-    transform: translateX(-50%) rotate(0deg) scale(1);
-  }
-  40% {
-    transform: translateX(-50%) rotate(-42deg) scale(1.4);
-  }
-  80% {
-    transform: translateX(-50%) rotate(18deg) scale(1.18);
-  }
-  100% {
-    transform: translateX(-50%) rotate(0deg) scale(1);
-  }
 }
 
 /* Center GO Button */

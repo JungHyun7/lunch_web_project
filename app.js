@@ -211,6 +211,46 @@ function getCleanDbUrl() {
   return url.trim().replace(/\/+$/, "");
 }
 
+function applyFirebaseData(data) {
+  if (!data || typeof data !== "object") return;
+
+  // 1. Restaurants processing (with empty marker handling)
+  if (data.restaurants) {
+    if (Array.isArray(data.restaurants) && data.restaurants[0] === "__EMPTY_MARKER__") {
+      restaurants = [];
+    } else if (Array.isArray(data.restaurants)) {
+      restaurants = data.restaurants;
+    } else {
+      restaurants = [];
+    }
+    localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+  } else if (data.hasSynced) {
+    // If Firebase DB was synced before but 'restaurants' key was deleted due to empty array nullification
+    restaurants = [];
+    localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+  }
+
+  // 2. Weekly winners processing
+  if (data.weeklyWinners) {
+    weeklyWinners = data.weeklyWinners;
+    localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
+  } else if (data.hasSynced) {
+    weeklyWinners = { Mon: null, Tue: null, Wed: null, Thu: null, Fri: null };
+    localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
+  }
+
+  // 3. Monthly history processing
+  if (data.monthlyHistory) {
+    monthlyHistory = data.monthlyHistory;
+    localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(monthlyHistory));
+  } else if (data.hasSynced) {
+    monthlyHistory = {};
+    localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(monthlyHistory));
+  }
+
+  renderUI();
+}
+
 function initFirebase() {
   if (typeof fetch === "undefined") return;
   const dbStatusBadge = document.getElementById("dbStatusBadge");
@@ -226,19 +266,7 @@ function initFirebase() {
     })
     .then(data => {
       if (data) {
-        if (data.restaurants) {
-          restaurants = data.restaurants;
-          localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
-        }
-        if (data.weeklyWinners) {
-          weeklyWinners = data.weeklyWinners;
-          localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
-        }
-        if (data.monthlyHistory) {
-          monthlyHistory = data.monthlyHistory;
-          localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(monthlyHistory));
-        }
-        renderUI();
+        applyFirebaseData(data);
       } else {
         syncToFirebase();
       }
@@ -270,20 +298,7 @@ function setupEventSource(jsonUrl) {
         try {
           const parsed = JSON.parse(e.data);
           if (parsed && parsed.data) {
-            const data = parsed.data;
-            if (data.restaurants) {
-              restaurants = data.restaurants;
-              localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
-            }
-            if (data.weeklyWinners) {
-              weeklyWinners = data.weeklyWinners;
-              localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
-            }
-            if (data.monthlyHistory) {
-              monthlyHistory = data.monthlyHistory;
-              localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(monthlyHistory));
-            }
-            renderUI();
+            applyFirebaseData(parsed.data);
           }
         } catch (err) {
           // ignore stream parse errors
@@ -301,9 +316,10 @@ function syncToFirebase() {
   const jsonUrl = `${baseUrl}/lunch_app.json`;
 
   const payload = {
-    restaurants: restaurants,
-    weeklyWinners: weeklyWinners,
-    monthlyHistory: monthlyHistory,
+    restaurants: (restaurants && restaurants.length > 0) ? restaurants : ["__EMPTY_MARKER__"],
+    weeklyWinners: weeklyWinners || { Mon: null, Tue: null, Wed: null, Thu: null, Fri: null },
+    monthlyHistory: monthlyHistory || {},
+    hasSynced: true,
     updatedAt: Date.now()
   };
 

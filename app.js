@@ -180,17 +180,115 @@ function loadState() {
   currentWeekInfo.textContent = `${weekDates["Mon"].fullDateStr} ~ ${weekDates["Fri"].shortDateStr}`;
 }
 
+// ==========================================================================
+// Firebase Realtime DB Synchronization Logic
+// ==========================================================================
+let dbRef = null;
+let isDbOnline = false;
+const STORAGE_KEY_FIREBASE_CFG = "roulette_firebase_config_v1";
+
+function initFirebase() {
+  const dbStatusBadge = document.getElementById("dbStatusBadge");
+  const dbStatusText = document.getElementById("dbStatusText");
+
+  if (typeof firebase === "undefined") {
+    if (dbStatusBadge) {
+      dbStatusBadge.className = "db-status-badge offline";
+      dbStatusText.textContent = "로컬 모드";
+    }
+    return;
+  }
+
+  const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG);
+  let configToUse = null;
+
+  if (savedCfg) {
+    try {
+      configToUse = JSON.parse(savedCfg);
+    } catch (e) {
+      if (savedCfg.startsWith("http")) {
+        configToUse = { databaseURL: savedCfg.trim() };
+      }
+    }
+  }
+
+  if (!configToUse || (!configToUse.databaseURL && !configToUse.apiKey)) {
+    if (dbStatusBadge) {
+      dbStatusBadge.className = "db-status-badge offline";
+      dbStatusText.textContent = "로컬 모드";
+    }
+    return;
+  }
+
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(configToUse);
+    }
+    dbRef = firebase.database().ref("lunch_app");
+
+    dbRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        if (data.restaurants) {
+          restaurants = data.restaurants;
+          localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+        }
+        if (data.weeklyWinners) {
+          weeklyWinners = data.weeklyWinners;
+          localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
+        }
+        if (data.monthlyHistory) {
+          monthlyHistory = data.monthlyHistory;
+          localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(monthlyHistory));
+        }
+        renderUI();
+      }
+    });
+
+    isDbOnline = true;
+    if (dbStatusBadge) {
+      dbStatusBadge.className = "db-status-badge online";
+      dbStatusText.textContent = "실시간 DB 연결됨";
+    }
+  } catch (err) {
+    console.warn("Firebase DB Connection Error:", err);
+    if (dbStatusBadge) {
+      dbStatusBadge.className = "db-status-badge offline";
+      dbStatusText.textContent = "DB 오류 (로컬 모드)";
+    }
+  }
+}
+
+function syncToFirebase() {
+  if (dbRef && isDbOnline) {
+    try {
+      dbRef.set({
+        restaurants: restaurants,
+        weeklyWinners: weeklyWinners,
+        monthlyHistory: monthlyHistory,
+        updatedAt: Date.now()
+      });
+    } catch (e) {
+      console.error("Firebase sync error:", e);
+    }
+  }
+}
+
 function saveRestaurantList() {
   localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+  syncToFirebase();
 }
 
 function saveWeeklyWinners() {
   localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
+  syncToFirebase();
 }
 
 function saveMonthlyHistory() {
   localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(monthlyHistory));
+  syncToFirebase();
 }
+
 
 // ==========================================================================
 // Advanced Candidate Filtering Logic
@@ -993,4 +1091,81 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", () => {
     drawWheel();
   });
+
+  // DB Settings Modal Handlers
+  const dbModal = document.getElementById("dbModal");
+  const openDbSettingsBtn = document.getElementById("openDbSettingsBtn");
+  const dbStatusBadge = document.getElementById("dbStatusBadge");
+  const closeDbModalBtn = document.getElementById("closeDbModalBtn");
+  const dbConfigForm = document.getElementById("dbConfigForm");
+  const dbConfigInput = document.getElementById("dbConfigInput");
+  const disconnectDbBtn = document.getElementById("disconnectDbBtn");
+
+  if (openDbSettingsBtn) {
+    openDbSettingsBtn.addEventListener("click", () => {
+      const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG) || "";
+      dbConfigInput.value = savedCfg;
+      dbModal.classList.remove("hidden");
+    });
+  }
+
+  if (dbStatusBadge) {
+    dbStatusBadge.addEventListener("click", () => {
+      const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG) || "";
+      dbConfigInput.value = savedCfg;
+      dbModal.classList.remove("hidden");
+    });
+  }
+
+  if (closeDbModalBtn) {
+    closeDbModalBtn.addEventListener("click", () => {
+      dbModal.classList.add("hidden");
+    });
+  }
+
+  if (dbModal) {
+    dbModal.addEventListener("click", (e) => {
+      if (e.target === dbModal) dbModal.classList.add("hidden");
+    });
+  }
+
+  if (dbConfigForm) {
+    dbConfigForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = dbConfigInput.value.trim();
+      if (!val) return;
+
+      localStorage.setItem(STORAGE_KEY_FIREBASE_CFG, val);
+      dbModal.classList.add("hidden");
+
+      initFirebase();
+      // Push initial state to DB if empty
+      setTimeout(() => {
+        syncToFirebase();
+      }, 500);
+    });
+  }
+
+  if (disconnectDbBtn) {
+    disconnectDbBtn.addEventListener("click", () => {
+      if (confirm("실시간 DB 연동을 해제하고 로컬 모드로 전환하시겠습니까?")) {
+        localStorage.removeItem(STORAGE_KEY_FIREBASE_CFG);
+        isDbOnline = false;
+        if (dbRef) dbRef.off();
+        dbRef = null;
+
+        const dbStatusBadge = document.getElementById("dbStatusBadge");
+        const dbStatusText = document.getElementById("dbStatusText");
+        if (dbStatusBadge) {
+          dbStatusBadge.className = "db-status-badge offline";
+          dbStatusText.textContent = "로컬 모드";
+        }
+        dbModal.classList.add("hidden");
+      }
+    });
+  }
+
+  // Initialize Firebase DB if config exists
+  initFirebase();
 });
+

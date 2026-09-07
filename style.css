@@ -863,3 +863,108 @@ body {
   pointer-events: none;
   z-index: 99;
 }
+
+/* ==========================================================================
+   DB Status Badge & Firebase Modal Styling
+   ========================================================================== */
+.header-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.db-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+  background-color: #f8fafc;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.db-status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.db-status-badge.online {
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+.db-status-badge.offline {
+  background-color: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+}
+
+.db-status-badge.online .status-dot {
+  background-color: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  animation: pulseDot 2s infinite;
+}
+
+.db-status-badge.offline .status-dot {
+  background-color: #f97316;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.db-modal-content {
+  text-align: left;
+  max-width: 520px;
+}
+
+.db-help-box {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0.8rem 0;
+}
+
+.db-help-box ol {
+  margin-left: 1.2rem;
+  margin-top: 0.3rem;
+}
+
+.db-config-textarea {
+  width: 100%;
+  height: 110px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  padding: 0.6rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: var(--text-main);
+  resize: vertical;
+}
+
+.db-config-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 8px var(--primary-glow);
+}
+

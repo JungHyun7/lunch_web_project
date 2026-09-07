@@ -183,9 +183,42 @@ function loadState() {
 // ==========================================================================
 // Firebase Realtime DB Synchronization Logic
 // ==========================================================================
-let dbRef = null;
-let isDbOnline = false;
-const STORAGE_KEY_FIREBASE_CFG = "roulette_firebase_config_v1";
+// DB Modal Controller Functions (Top-Level Global Scope)
+// ==========================================================================
+function openDbModal() {
+  const dbModal = document.getElementById("dbModal");
+  const dbConfigInput = document.getElementById("dbConfigInput");
+  const savedCfg = localStorage.getItem("roulette_firebase_config_v1") || "";
+
+  if (dbModal) {
+    if (dbConfigInput) dbConfigInput.value = savedCfg;
+    dbModal.classList.remove("hidden");
+    dbModal.style.setProperty("display", "flex", "important");
+    dbModal.style.setProperty("opacity", "1", "important");
+    dbModal.style.setProperty("pointer-events", "auto", "important");
+  } else {
+    const inputUrl = prompt(
+      "Firebase Database URL을 입력해 주세요:\n(예: https://your-app-default-rtdb.firebaseio.com)",
+      savedCfg
+    );
+    if (inputUrl !== null && inputUrl.trim() !== "") {
+      localStorage.setItem("roulette_firebase_config_v1", inputUrl.trim());
+      if (typeof initFirebase === "function") initFirebase();
+      alert("✅ Firebase DB 연동 정보가 성공적으로 저장되었습니다!");
+    }
+  }
+}
+
+function hideDbModal() {
+  const dbModal = document.getElementById("dbModal");
+  if (dbModal) {
+    dbModal.classList.add("hidden");
+    dbModal.style.setProperty("display", "none", "important");
+  }
+}
+
+window.openDbModal = openDbModal;
+window.hideDbModal = hideDbModal;
 
 function initFirebase() {
   const dbStatusBadge = document.getElementById("dbStatusBadge");
@@ -1092,35 +1125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     drawWheel();
   });
 
-// ==========================================================================
-// DB Modal Controller Function (100% Reliable & Fallback Supported)
-// ==========================================================================
-function openDbModal() {
-  const dbModal = document.getElementById("dbModal");
-  const dbConfigInput = document.getElementById("dbConfigInput");
-  const savedCfg = localStorage.getItem("roulette_firebase_config_v1") || "";
-
-  if (dbModal) {
-    if (dbConfigInput) dbConfigInput.value = savedCfg;
-    dbModal.classList.remove("hidden");
-    dbModal.style.setProperty("display", "flex", "important");
-    dbModal.style.setProperty("opacity", "1", "important");
-    dbModal.style.setProperty("pointer-events", "auto", "important");
-  } else {
-    // Ultimate fallback if modal element is not found
-    const inputUrl = prompt(
-      "Firebase Database URL을 입력해 주세요:\n(예: https://your-app-default-rtdb.firebaseio.com)",
-      savedCfg
-    );
-    if (inputUrl !== null && inputUrl.trim() !== "") {
-      localStorage.setItem("roulette_firebase_config_v1", inputUrl.trim());
-      if (typeof initFirebase === "function") initFirebase();
-      alert("✅ Firebase DB 연동 정보가 성공적으로 저장되었습니다!");
-    }
-  }
-}
-window.openDbModal = openDbModal;
-
   // DB Settings Modal Handlers
   const dbModal = document.getElementById("dbModal");
   const openDbSettingsBtn = document.getElementById("openDbSettingsBtn");
@@ -1129,13 +1133,6 @@ window.openDbModal = openDbModal;
   const dbConfigForm = document.getElementById("dbConfigForm");
   const dbConfigInput = document.getElementById("dbConfigInput");
   const disconnectDbBtn = document.getElementById("disconnectDbBtn");
-
-  function hideDbModal() {
-    if (dbModal) {
-      dbModal.classList.add("hidden");
-      dbModal.style.setProperty("display", "none", "important");
-    }
-  }
 
   if (openDbSettingsBtn) {
     openDbSettingsBtn.addEventListener("click", openDbModal);

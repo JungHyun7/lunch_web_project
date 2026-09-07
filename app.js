@@ -813,6 +813,9 @@ function onSpinComplete(winnerObject) {
     ${winnerObject.mainDish && winnerObject.mainDish !== '없음' ? `<span style="color:var(--text-muted);">| 대표: ${winnerObject.mainDish}</span>` : ''}
   `;
   winnerModal.classList.remove("hidden");
+  winnerModal.style.setProperty("display", "flex", "important");
+  winnerModal.style.setProperty("opacity", "1", "important");
+  winnerModal.style.setProperty("pointer-events", "auto", "important");
   
   triggerConfetti();
   renderUI();
@@ -893,10 +896,13 @@ function openManualModalForDay(dayKey) {
 
   renderQuickTags();
   manualModal.classList.remove("hidden");
+  manualModal.style.setProperty("display", "flex", "important");
+  manualModal.style.setProperty("opacity", "1", "important");
+  manualModal.style.setProperty("pointer-events", "auto", "important");
 }
 
 function openManualModalForDate(dateStr) {
-  selectedManualDay = dateStr; // ISO date string "YYYY-MM-DD"
+  selectedManualDay = dateStr;
   manualModalTitle.textContent = `${dateStr} 식당 입력 및 휴무일 설정`;
 
   const record = monthlyHistory[dateStr];
@@ -912,7 +918,13 @@ function openManualModalForDate(dateStr) {
 
   renderQuickTags();
   manualModal.classList.remove("hidden");
+  manualModal.style.setProperty("display", "flex", "important");
+  manualModal.style.setProperty("opacity", "1", "important");
+  manualModal.style.setProperty("pointer-events", "auto", "important");
 }
+
+window.openManualModalForDay = openManualModalForDay;
+window.openManualModalForDate = openManualModalForDate;
 
 function renderQuickTags() {
   manualQuickTags.innerHTML = "";
@@ -929,6 +941,7 @@ function renderQuickTags() {
 
 function closeManualModal() {
   manualModal.classList.add("hidden");
+  manualModal.style.setProperty("display", "none", "important");
   selectedManualDay = null;
 }
 
@@ -1138,10 +1151,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   closeModalBtn.addEventListener("click", () => {
     winnerModal.classList.add("hidden");
+    winnerModal.style.setProperty("display", "none", "important");
   });
 
   winnerModal.addEventListener("click", (e) => {
-    if (e.target === winnerModal) winnerModal.classList.add("hidden");
+    if (e.target === winnerModal) {
+      winnerModal.classList.add("hidden");
+      winnerModal.style.setProperty("display", "none", "important");
+    }
   });
 
   // Weekly Grid Day Box Click Event

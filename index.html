@@ -30,11 +30,13 @@
         </div>
       </div>
       <div class="header-right-actions">
-        <div id="dbStatusBadge" class="db-status-badge offline" onclick="openDbModal()" title="클릭하여 DB 연동 상태 확인">
+        <div id="dbStatusBadge" class="db-status-badge offline" title="실시간 DB 연결 상태">
           <span class="status-dot"></span>
-          <span id="dbStatusText">로컬 모드</span>
+          <span id="dbStatusText">연결 중...</span>
         </div>
-        <button id="openDbSettingsBtn" class="btn btn-secondary btn-sm" onclick="openDbModal()">⚙️ DB 설정</button>
+        <button id="themeToggleBtn" class="btn btn-secondary btn-sm" title="다크/라이트 모드 전환">
+          <span id="themeIcon">🌙</span> <span id="themeText">다크 모드</span>
+        </button>
       </div>
     </header>
 
@@ -232,35 +234,6 @@
           </div>
         </form>
       </div>
-    </div>
-  </div>
-
-  <!-- DB Configuration Modal -->
-  <div id="dbModal" class="modal-overlay hidden">
-    <div class="modal-content db-modal-content">
-      <div class="modal-emoji">☁️</div>
-      <h2 class="modal-title">실시간 팀 공유 DB 설정</h2>
-      <p class="modal-desc">Firebase Realtime Database 정보를 입력하면 팀원들과 실시간으로 공유됩니다.</p>
-
-      <div class="db-help-box">
-        <strong>💡 Firebase 설정 안내 (무료):</strong>
-        <ol>
-          <li><a href="https://console.firebase.google.com/" target="_blank" style="color:var(--primary);">Firebase 콘솔</a>에서 프로젝트 생성 후 <strong>Realtime Database</strong> 생성</li>
-          <li>규칙(Rules)에서 읽기/쓰기를 <code>true</code>로 설정</li>
-          <li>Database URL (예: <code>https://your-app-default-rtdb.firebaseio.com</code>) 또는 Config JSON 객체를 아래에 입력하세요.</li>
-        </ol>
-      </div>
-
-      <form id="dbConfigForm">
-        <label style="font-size:0.8rem; font-weight:700; display:block; margin-bottom:4px; text-align:left;">Firebase Database URL 또는 Config JSON:</label>
-        <textarea id="dbConfigInput" class="db-config-textarea" placeholder="https://your-app-default-rtdb.firebaseio.com&#10;또는 { &quot;databaseURL&quot;: &quot;...&quot; }"></textarea>
-
-        <div class="modal-actions gap-btn" style="margin-top:1rem;">
-          <button type="button" id="disconnectDbBtn" class="btn btn-secondary btn-danger-text">DB 해제 (로컬 모드로 변경)</button>
-          <button type="submit" class="btn btn-primary">연결 및 저장</button>
-          <button type="button" id="closeDbModalBtn" class="btn btn-secondary">닫기</button>
-        </div>
-      </form>
     </div>
   </div>
 

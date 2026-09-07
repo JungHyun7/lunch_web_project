@@ -46,6 +46,88 @@
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ==========================================================================
+   Dark Mode Theme Overrides
+   ========================================================================== */
+[data-theme="dark"] {
+  --bg-dark: #0f172a;       /* 딥 슬레이트 파스텔 배경 */
+  --bg-card: #1e293b;       /* 슬레이트 800 카드 */
+  --bg-card-hover: #334155;
+  --bg-input: #0f172a;
+
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-glow: rgba(59, 130, 246, 0.35);
+
+  --accent-gold: #f59e0b;
+  --accent-gold-glow: rgba(245, 158, 11, 0.35);
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dark: #f8fafc;
+
+  --border-color: #334155;
+  --border-light: #475569;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .filter-bar,
+[data-theme="dark"] .add-form-expanded,
+[data-theme="dark"] .day-box,
+[data-theme="dark"] .cal-day-cell,
+[data-theme="dark"] .tag-item,
+[data-theme="dark"] .btn-secondary,
+[data-theme="dark"] .quick-tag-chip {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .tag-item.unselected,
+[data-theme="dark"] .cal-day-cell.other-month {
+  background-color: #0f172a;
+  border-color: #1e293b;
+}
+
+[data-theme="dark"] .filter-btn {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .filter-btn.active {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .modal-content {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .add-form-expanded input,
+[data-theme="dark"] .add-form-expanded select,
+[data-theme="dark"] .manual-form input {
+  background-color: #0f172a;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .db-status-badge {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .db-status-badge.online {
+  background-color: #064e3b;
+  border-color: #047857;
+  color: #34d399;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

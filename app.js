@@ -1055,11 +1055,49 @@ function animateConfetti() {
 }
 
 // ==========================================================================
+// Theme Management Engine (Light / Dark Mode)
+// ==========================================================================
+const STORAGE_KEY_THEME = "roulette_theme_v1";
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  const themeIcon = document.getElementById("themeIcon");
+  const themeText = document.getElementById("themeText");
+  if (theme === "dark") {
+    if (themeIcon) themeIcon.textContent = "☀️";
+    if (themeText) themeText.textContent = "라이트 모드";
+  } else {
+    if (themeIcon) themeIcon.textContent = "🌙";
+    if (themeText) themeText.textContent = "다크 모드";
+  }
+  localStorage.setItem(STORAGE_KEY_THEME, theme);
+  if (typeof drawWheel === "function") drawWheel();
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  const nextTheme = current === "dark" ? "light" : "dark";
+  applyTheme(nextTheme);
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || "light";
+  applyTheme(savedTheme);
+}
+
+// ==========================================================================
 // Event Listeners Initialization
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   loadState();
+  initFirebase();
   renderUI();
+
+  const themeToggleBtn = document.getElementById("themeToggleBtn");
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", toggleTheme);
+  }
 
   spinBtn.addEventListener("click", spinWheel);
 

@@ -1093,14 +1093,31 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 // ==========================================================================
-// DB Modal Controller Function
+// DB Modal Controller Function (100% Reliable & Fallback Supported)
 // ==========================================================================
 function openDbModal() {
   const dbModal = document.getElementById("dbModal");
   const dbConfigInput = document.getElementById("dbConfigInput");
-  const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG) || "";
-  if (dbConfigInput) dbConfigInput.value = savedCfg;
-  if (dbModal) dbModal.classList.remove("hidden");
+  const savedCfg = localStorage.getItem("roulette_firebase_config_v1") || "";
+
+  if (dbModal) {
+    if (dbConfigInput) dbConfigInput.value = savedCfg;
+    dbModal.classList.remove("hidden");
+    dbModal.style.setProperty("display", "flex", "important");
+    dbModal.style.setProperty("opacity", "1", "important");
+    dbModal.style.setProperty("pointer-events", "auto", "important");
+  } else {
+    // Ultimate fallback if modal element is not found
+    const inputUrl = prompt(
+      "Firebase Database URL을 입력해 주세요:\n(예: https://your-app-default-rtdb.firebaseio.com)",
+      savedCfg
+    );
+    if (inputUrl !== null && inputUrl.trim() !== "") {
+      localStorage.setItem("roulette_firebase_config_v1", inputUrl.trim());
+      if (typeof initFirebase === "function") initFirebase();
+      alert("✅ Firebase DB 연동 정보가 성공적으로 저장되었습니다!");
+    }
+  }
 }
 window.openDbModal = openDbModal;
 
@@ -1113,31 +1130,28 @@ window.openDbModal = openDbModal;
   const dbConfigInput = document.getElementById("dbConfigInput");
   const disconnectDbBtn = document.getElementById("disconnectDbBtn");
 
+  function hideDbModal() {
+    if (dbModal) {
+      dbModal.classList.add("hidden");
+      dbModal.style.setProperty("display", "none", "important");
+    }
+  }
+
   if (openDbSettingsBtn) {
-    openDbSettingsBtn.addEventListener("click", () => {
-      const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG) || "";
-      dbConfigInput.value = savedCfg;
-      dbModal.classList.remove("hidden");
-    });
+    openDbSettingsBtn.addEventListener("click", openDbModal);
   }
 
   if (dbStatusBadge) {
-    dbStatusBadge.addEventListener("click", () => {
-      const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG) || "";
-      dbConfigInput.value = savedCfg;
-      dbModal.classList.remove("hidden");
-    });
+    dbStatusBadge.addEventListener("click", openDbModal);
   }
 
   if (closeDbModalBtn) {
-    closeDbModalBtn.addEventListener("click", () => {
-      dbModal.classList.add("hidden");
-    });
+    closeDbModalBtn.addEventListener("click", hideDbModal);
   }
 
   if (dbModal) {
     dbModal.addEventListener("click", (e) => {
-      if (e.target === dbModal) dbModal.classList.add("hidden");
+      if (e.target === dbModal) hideDbModal();
     });
   }
 
@@ -1148,10 +1162,9 @@ window.openDbModal = openDbModal;
       if (!val) return;
 
       localStorage.setItem(STORAGE_KEY_FIREBASE_CFG, val);
-      dbModal.classList.add("hidden");
+      hideDbModal();
 
       initFirebase();
-      // Push initial state to DB if empty
       setTimeout(() => {
         syncToFirebase();
       }, 500);
@@ -1172,7 +1185,7 @@ window.openDbModal = openDbModal;
           dbStatusBadge.className = "db-status-badge offline";
           dbStatusText.textContent = "로컬 모드";
         }
-        dbModal.classList.add("hidden");
+        hideDbModal();
       }
     });
   }

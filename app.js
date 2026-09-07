@@ -792,29 +792,33 @@ function spinWheel() {
   let deltaAngle = desiredFinalAngle - currentAngle;
   if (deltaAngle <= 0) deltaAngle += Math.PI * 2;
 
-  const extraRounds = Math.PI * 2 * (7 + Math.floor(Math.random() * 3));
+  // 속도감 극대화: 10~15 바퀴 회전
+  const extraRounds = Math.PI * 2 * (10 + Math.floor(Math.random() * 5));
 
   if (isSpinning) {
     comboCount++;
-    spinDuration = Math.max(2500, 4200 - comboCount * 400);
+    spinDuration = Math.max(1600, 3200 - comboCount * 300);
+    spinStartAngle = currentAngle;
     currentTargetAngle = currentAngle + deltaAngle + extraRounds + (Math.PI * 2 * comboCount * 2);
+    spinStartTime = performance.now(); // 시간 기점 리셋으로 연타 회전 계속 유효하게 만듦!
+
     triggerPointerTick(true);
-    updateSpinBtnText(`🔥 연타 콤보 x${comboCount}! (가속 추첨!)`);
+    updateSpinBtnText(`⚡ 연타 가속 x${comboCount}!`);
     return;
   }
 
   isSpinning = true;
   comboCount = 1;
-  spinDuration = 4200;
+  spinDuration = 3200; // 빠른 스피드감
   if (wheelWrapper) wheelWrapper.classList.add("is-spinning-active");
-  updateSpinBtnText("🔥 룰렛 돌리기! (연타 가능!)");
+  updateSpinBtnText("🔥 룰렛 회전 중! (연타 가능)");
 
   spinStartAngle = currentAngle;
   currentTargetAngle = currentAngle + deltaAngle + extraRounds;
   spinStartTime = performance.now();
   let lastSectorIndex = -1;
 
-  // Quad Ease Out for smooth fast spin and dramatic slowing down ticks
+  // Fast & Sharp Ease Out Quart for dramatic high-speed feel
   function easeOutQuart(t) {
     return 1 - Math.pow(1 - t, 4);
   }

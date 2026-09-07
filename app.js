@@ -430,7 +430,56 @@ function getAvailableCandidates() {
 // ==========================================================================
 // UI Rendering Functions
 // ==========================================================================
+function syncWeeklyToMonthly() {
+  const { weekDates } = getWeekDates();
+  if (!weekDates) return;
+
+  let hasChanged = false;
+
+  DAYS.forEach(dayKey => {
+    const winner = weeklyWinners[dayKey];
+    if (weekDates[dayKey]) {
+      const targetIsoDate = weekDates[dayKey].isoDateStr;
+      
+      if (!winner) {
+        if (monthlyHistory[targetIsoDate]) {
+          delete monthlyHistory[targetIsoDate];
+          hasChanged = true;
+        }
+      } else if (winner.type === "holiday") {
+        if (!monthlyHistory[targetIsoDate] || monthlyHistory[targetIsoDate].type !== "holiday") {
+          monthlyHistory[targetIsoDate] = { type: "holiday" };
+          hasChanged = true;
+        }
+      } else {
+        const name = typeof winner === 'string' ? winner : (winner.restaurantName || winner.name || "식당");
+        const category = typeof winner === 'object' ? (winner.category || "기타") : "기타";
+        const price = typeof winner === 'object' ? (winner.price || 0) : 0;
+        const mainDish = typeof winner === 'object' ? (winner.mainDish || "") : "";
+
+        const currentRec = monthlyHistory[targetIsoDate];
+        if (!currentRec || currentRec.restaurantName !== name || currentRec.name !== name || currentRec.category !== category) {
+          monthlyHistory[targetIsoDate] = {
+            type: winner.type || "winner",
+            restaurantName: name,
+            name: name,
+            category: category,
+            price: price,
+            mainDish: mainDish
+          };
+          hasChanged = true;
+        }
+      }
+    }
+  });
+
+  if (hasChanged) {
+    saveMonthlyHistory();
+  }
+}
+
 function renderUI() {
+  syncWeeklyToMonthly();
   renderWeeklyGrid();
   renderRestaurantTags();
   renderCalendar();
@@ -595,10 +644,11 @@ function renderCalendar() {
         contentHtml = `<div class="cal-holiday-tag">🏖️ 휴무</div>`;
       } else {
         const catClass = `cat-${record.category || '기타'}`;
+        const restName = record.restaurantName || record.name || '식당';
         contentHtml = `
           <div class="cal-entry-box">
             <span class="cat-badge ${catClass}">${record.category || '기타'}</span>
-            <div class="cal-restaurant-name">${record.restaurantName}</div>
+            <div class="cal-restaurant-name">${restName}</div>
           </div>
         `;
       }

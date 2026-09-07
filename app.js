@@ -373,8 +373,32 @@ function saveMonthlyHistory() {
 
 
 // ==========================================================================
-// Advanced Candidate Filtering Logic
+// Advanced Candidate Filtering Logic & Smart Similar Dish Prevention
 // ==========================================================================
+const SIMILAR_DISH_KEYWORDS = [
+  "제육", "김치찌개", "돈까스", "돈카츠", "짜장", "짬뽕", "순대국", "초밥",
+  "스시", "쌀국수", "비빔밥", "부대찌개", "된장찌개", "칼국수", "우동",
+  "라멘", "카레", "국밥", "찌개", "덮밥", "파스타", "냉면", "마라탕"
+];
+
+function extractDishKeywords(dishText) {
+  if (!dishText || dishText.trim() === "" || dishText === "없음") return [];
+  const clean = dishText.trim();
+  const found = [];
+  
+  SIMILAR_DISH_KEYWORDS.forEach(kw => {
+    if (clean.includes(kw)) {
+      found.push(kw);
+    }
+  });
+
+  if (found.length === 0) {
+    found.push(clean);
+  }
+
+  return found;
+}
+
 function getAvailableCandidates() {
   // 0. Filter out restaurants that are unselected (체크 해제된 식당 제외)
   let candidates = restaurants.filter(item => item.selected !== false);
@@ -393,14 +417,22 @@ function getAvailableCandidates() {
     candidates = candidates.filter(item => item.price > 12000);
   }
 
-  // 3. Main Dish Uniqueness Condition (대표메뉴 동일 주간 중복 방지)
-  const usedMainDishes = Object.values(weeklyWinners)
+  // 3. Main Dish Uniqueness & Smart Similar Dish Group Prevention Logic
+  const usedWinnerDishes = Object.values(weeklyWinners)
     .filter(val => val && val.type !== "holiday" && val.mainDish && val.mainDish.trim() !== "" && val.mainDish !== "없음")
     .map(val => val.mainDish.trim());
 
+  const usedDishKeywords = [];
+  usedWinnerDishes.forEach(dish => {
+    const kws = extractDishKeywords(dish);
+    kws.forEach(k => usedDishKeywords.push(k));
+  });
+
   candidates = candidates.filter(item => {
     if (!item.mainDish || item.mainDish.trim() === "" || item.mainDish === "없음") return true;
-    return !usedMainDishes.includes(item.mainDish.trim());
+    const itemKws = extractDishKeywords(item.mainDish);
+    const isConflict = itemKws.some(kw => usedDishKeywords.includes(kw));
+    return !isConflict;
   });
 
   // 4. Non-Korean Category 2 Consecutive Days Prevention (비한식 2일 연속 금지)

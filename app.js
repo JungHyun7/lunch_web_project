@@ -2,7 +2,7 @@
 // Default Constants & Initial Data
 // ==========================================================================
 const DEFAULT_RESTAURANTS = [
-  { id: "r1", name: "KTL 구내식당", category: "한식", price: 7500, mainDish: "오늘의 백반", selected: true },
+  { id: "r1", name: "구내식당", category: "한식", price: 7500, mainDish: "오늘의 백반", selected: true },
   { id: "r2", name: "한옥집 김치찌개", category: "한식", price: 9500, mainDish: "돼지 김치찌개", selected: true },
   { id: "r3", name: "원조 순대국밥", category: "한식", price: 10000, mainDish: "순대국", selected: true },
   { id: "r4", name: "남산 돈까스", category: "양식", price: 11000, mainDish: "왕돈까스", selected: true },

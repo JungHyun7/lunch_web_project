@@ -37,106 +37,221 @@
 }
 
 [data-theme="dark"] {
-  --ink: #171717;
-  --paper: #221b35;
-  --white: #2e2647;
-  --yellow: #ffd84d;
-  --blue: #8cbcff;
-  --pink: #ff9fca;
-  --green: #a9e76c;
-  --purple: #b99cff;
-  --orange: #ff9d57;
+  --ink: #000000;
+  --paper: #0c1017;
+  --white: #161c2a;
+  --yellow: #ffd60a;
+  --blue: #38bdf8;
+  --pink: #f43f5e;
+  --green: #34d399;
+  --purple: #a855f7;
+  --orange: #fb923c;
+  --red: #ff4d4d;
   
-  --border: 3px solid #171717;
-  --shadow: 7px 7px 0 #171717;
-  --small-shadow: 4px 4px 0 #171717;
+  --border: 3px solid #000000;
+  --shadow: 7px 7px 0 #000000;
+  --small-shadow: 4px 4px 0 #000000;
+  --btn-shadow: 3px 3px 0 #000000;
 
-  --text-main: #fffdf8;
-  --text-muted: #dcd3f5;
-  --bg-card: #2e2647;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --bg-card: #161c2a;
+
+  --cat-korean: #ffd60a;
+  --cat-chinese: #fb923c;
+  --cat-japanese: #38bdf8;
+  --cat-western: #f43f5e;
+  --cat-asian: #34d399;
+  --cat-other: #a855f7;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  min-width: 320px;
-  margin: 0;
-  padding: 0;
-  color: var(--text-main);
+[data-theme="dark"] body {
   background: radial-gradient(
-      circle at 10% 15%,
-      rgba(255, 216, 77, 0.35),
-      transparent 25%
+      circle at 12% 15%,
+      rgba(168, 85, 247, 0.22),
+      transparent 30%
     ),
     radial-gradient(
-      circle at 90% 12%,
-      rgba(140, 188, 255, 0.35),
-      transparent 27%
+      circle at 88% 18%,
+      rgba(56, 189, 248, 0.2),
+      transparent 30%
     ),
     var(--paper);
-  font-family: "Space Grotesk", "Noto Sans KR", sans-serif;
-  transition: background 400ms ease, color 400ms ease;
-  line-height: 1.5;
-}
-
-/* ==========================================================================
-   Typography & Base Components
-   ========================================================================== */
-.eyebrow {
-  margin: 0 0 8px;
-  font-family: "DM Mono", monospace;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.4;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-[data-theme="dark"] .eyebrow {
-  color: var(--yellow);
-}
-
-.app-shell {
-  width: min(1400px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 24px 0 60px;
-}
-
-/* Bento Card Frame */
-.bento-card, .card {
-  border: var(--border);
-  border-radius: 22px;
-  background: var(--bg-card);
-  box-shadow: var(--shadow);
-  padding: 24px;
-  transition: transform 170ms ease, box-shadow 170ms ease;
-}
-
-/* Header Hero Bento */
-.hero-bento {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-  background: var(--yellow);
-  margin-bottom: 24px;
-  padding: 28px 32px;
 }
 
 [data-theme="dark"] .hero-bento {
-  background: var(--purple);
-  color: var(--ink);
+  background: linear-gradient(135deg, #2e1065 0%, #3b0764 100%);
+  color: #ffffff;
+  border-color: #000000;
 }
 
 [data-theme="dark"] .hero-bento .eyebrow {
-  color: var(--ink);
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .hero-main-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .hero-main-title span {
+  color: #ffd60a;
+  -webkit-text-stroke: 1.5px #000000;
+  text-shadow: 3px 3px 0 #000000;
+}
+
+[data-theme="dark"] .hero-sub-text {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .bento-btn,
+[data-theme="dark"] .db-status-badge {
+  background: #1e2638;
+  color: #f8fafc;
+  border-color: #000000;
+}
+
+[data-theme="dark"] .bento-btn:hover,
+[data-theme="dark"] .db-status-badge:hover {
+  background: #38bdf8;
+  color: #000000;
+}
+
+[data-theme="dark"] .filter-btn {
+  background: #1e2638;
+  color: #f8fafc;
+  border-color: #000000;
+}
+
+[data-theme="dark"] .filter-btn.active {
+  background: #ffd60a;
+  color: #000000;
+}
+
+[data-theme="dark"] .btn-spin {
+  background: #ffd60a;
+  color: #000000;
+}
+
+[data-theme="dark"] .day-box {
+  background: #161c2a;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .day-box:hover {
+  background: #2a354d;
+}
+
+[data-theme="dark"] .day-box.is-today {
+  background: #854d0e;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .day-box.has-winner {
+  background: #065f46;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .day-box.is-holiday {
+  background: #9f1239;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .day-label,
+[data-theme="dark"] .day-value,
+[data-theme="dark"] .day-sub-info {
+  color: inherit;
+}
+
+[data-theme="dark"] .form-row input,
+[data-theme="dark"] .form-row select,
+[data-theme="dark"] .input-group-modern input {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #000000;
+}
+
+[data-theme="dark"] .form-row input:focus,
+[data-theme="dark"] .form-row select:focus,
+[data-theme="dark"] .input-group-modern input:focus {
+  background: #1e293b;
+  border-color: #38bdf8;
+  box-shadow: 4px 4px 0 #000000;
+}
+
+[data-theme="dark"] .tag-item,
+[data-theme="dark"] .quick-tag-chip,
+[data-theme="dark"] .quick-select-box,
+[data-theme="dark"] .holiday-card-toggle {
+  background: #1e2638;
+  color: #f8fafc;
+  border-color: #000000;
+}
+
+[data-theme="dark"] .holiday-card-toggle:has(input:checked) {
+  background: #9f1239;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .holiday-card-toggle:has(input:checked) .switch-title,
+[data-theme="dark"] .holiday-card-toggle:has(input:checked) .switch-subtitle {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .cal-day-cell {
+  background: #161c2a;
+  color: #f8fafc;
+  border-color: #000000;
+}
+
+[data-theme="dark"] .cal-day-cell:hover {
+  background: #2a354d;
+}
+
+[data-theme="dark"] .cal-day-cell.today {
+  background: #854d0e;
+}
+
+[data-theme="dark"] .cal-day-cell.other-month {
+  background: #0c1017;
+  opacity: 0.35;
+}
+
+[data-theme="dark"] .cal-restaurant-name {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .modal-card {
+  background: #161c2a;
+  color: #f8fafc;
+  border-color: #000000;
+  box-shadow: 10px 10px 0 #000000;
+}
+
+[data-theme="dark"] .modal-title-main {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .switch-title {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .winner-modal-card {
+  background: linear-gradient(135deg, #3b0764 0%, #581c87 100%);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .winner-restaurant-title {
+  color: #ffd60a;
+}
+
+[data-theme="dark"] .winner-top-tag {
+  background: #1e2638;
+  color: #38bdf8;
+  border-color: #000000;
+}
+
+[data-theme="dark"] .winner-desc-note {
+  color: #e2e8f0;
 }
 
 .hero-header-content {

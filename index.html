@@ -30,11 +30,11 @@
         </div>
       </div>
       <div class="header-right-actions">
-        <div id="dbStatusBadge" class="db-status-badge offline" title="클릭하여 DB 연동 상태 확인">
+        <div id="dbStatusBadge" class="db-status-badge offline" onclick="openDbModal()" title="클릭하여 DB 연동 상태 확인">
           <span class="status-dot"></span>
           <span id="dbStatusText">로컬 모드</span>
         </div>
-        <button id="openDbSettingsBtn" class="btn btn-secondary btn-sm">⚙️ DB 설정</button>
+        <button id="openDbSettingsBtn" class="btn btn-secondary btn-sm" onclick="openDbModal()">⚙️ DB 설정</button>
       </div>
     </header>
 

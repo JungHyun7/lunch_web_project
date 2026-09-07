@@ -1092,6 +1092,18 @@ document.addEventListener("DOMContentLoaded", () => {
     drawWheel();
   });
 
+// ==========================================================================
+// DB Modal Controller Function
+// ==========================================================================
+function openDbModal() {
+  const dbModal = document.getElementById("dbModal");
+  const dbConfigInput = document.getElementById("dbConfigInput");
+  const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG) || "";
+  if (dbConfigInput) dbConfigInput.value = savedCfg;
+  if (dbModal) dbModal.classList.remove("hidden");
+}
+window.openDbModal = openDbModal;
+
   // DB Settings Modal Handlers
   const dbModal = document.getElementById("dbModal");
   const openDbSettingsBtn = document.getElementById("openDbSettingsBtn");

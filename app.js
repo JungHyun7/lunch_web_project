@@ -208,6 +208,7 @@ function getCleanDbUrl() {
 }
 
 function initFirebase() {
+  if (typeof fetch === "undefined") return;
   const dbStatusBadge = document.getElementById("dbStatusBadge");
   const dbStatusText = document.getElementById("dbStatusText");
 

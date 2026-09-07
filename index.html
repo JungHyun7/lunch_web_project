@@ -195,47 +195,71 @@
 
     <!-- Winner Announcement Modal -->
     <div id="winnerModal" class="modal-overlay hidden">
-      <div class="modal-content card">
-        <div class="modal-emoji">🎉</div>
-        <h3 class="modal-subtitle">오늘의 점심/저녁 식당 당첨!</h3>
-        <h2 id="winnerName" class="modal-title">식당 이름</h2>
-        <div id="winnerMeta" class="winner-meta">
+      <div class="modal-card winner-modal-card">
+        <div class="winner-confetti-badge">🎉</div>
+        <span class="winner-top-tag">오늘의 추천 식당 당첨!</span>
+        <h2 id="winnerName" class="winner-restaurant-title">식당 이름</h2>
+        <div id="winnerMeta" class="winner-meta-chips">
           <!-- Category badge, price, main dish -->
         </div>
-        <p class="modal-desc">이번 주 및 월간 달력에 자동으로 기록되었습니다!</p>
-        <div class="modal-actions">
-          <button id="closeModalBtn" class="btn btn-primary" onclick="closeWinnerModal()">확인 (기록하기)</button>
+        <p class="winner-desc-note">이번 주 및 월간 달력에 자동으로 기록되었습니다 ✨</p>
+        <div class="winner-action-bar">
+          <button id="closeModalBtn" class="btn-modal btn-modal-save btn-block-modal" onclick="closeWinnerModal()">확인 (기록 완료)</button>
         </div>
       </div>
     </div>
 
     <!-- Manual Entry & Holiday Modal -->
     <div id="manualModal" class="modal-overlay hidden">
-      <div class="modal-content card manual-modal-content">
-        <div class="modal-emoji">✏️</div>
-        <h3 class="modal-subtitle" id="manualModalTitle">식당 등록 및 휴무일 설정</h3>
-        <p class="modal-desc">룰렛 대신 다녀온 식당을 등록하거나, 휴무일로 설정하세요.</p>
+      <div class="modal-card manual-modal-card">
+        <div class="modal-header-row">
+          <div class="modal-icon-badge">✏️</div>
+          <div class="modal-header-text">
+            <h3 class="modal-title-main" id="manualModalTitle">식당 등록 및 휴무일 설정</h3>
+            <p class="modal-desc-sub">룰렛 기록을 수동으로 수정하거나 휴무일로 설정합니다.</p>
+          </div>
+          <button type="button" class="modal-close-x" onclick="closeManualModal()" aria-label="닫기">&times;</button>
+        </div>
 
-        <form id="manualEntryForm" class="manual-form">
-          <div class="holiday-toggle-row">
-            <label class="checkbox-label">
-              <input type="checkbox" id="holidayCheckbox" />
-              <span>🏖️ 이 날을 <strong>휴무일</strong>로 지정</span>
+        <form id="manualEntryForm" class="manual-form-container">
+          <div class="holiday-card-toggle">
+            <label class="switch-label-container" for="holidayCheckbox">
+              <div class="switch-info">
+                <span class="holiday-badge-emoji">🏖️</span>
+                <div class="switch-text-content">
+                  <span class="switch-title">이 날을 휴무일로 지정</span>
+                  <span class="switch-subtitle">체크하면 이번 주 및 달력에 휴무로 표시됩니다</span>
+                </div>
+              </div>
+              <div class="custom-toggle-switch">
+                <input type="checkbox" id="holidayCheckbox" />
+                <span class="toggle-slider"></span>
+              </div>
             </label>
           </div>
 
-          <div id="manualInputFields">
-            <input type="text" id="manualRestaurantInput" placeholder="식당 이름 직접 입력..." maxlength="20" />
-            <div class="manual-quick-section">
-              <p class="quick-title">목록에서 빠르게 선택:</p>
-              <div id="manualQuickTags" class="manual-tags"></div>
+          <div id="manualInputFields" class="manual-fields-wrapper">
+            <div class="input-group-modern">
+              <span class="input-lead-icon">🍱</span>
+              <input type="text" id="manualRestaurantInput" placeholder="방문한 식당 이름 입력..." maxlength="20" />
+            </div>
+
+            <div class="quick-select-box">
+              <div class="quick-title-row">
+                <span>⚡ 자주 이용하는 식당 빠른 선택</span>
+              </div>
+              <div id="manualQuickTags" class="manual-tags-grid"></div>
             </div>
           </div>
 
-          <div class="modal-actions gap-btn">
-            <button type="button" id="clearManualBtn" class="btn btn-secondary btn-danger-text" onclick="clearManualEntry()">삭제 (기록 지우기)</button>
-            <button type="submit" class="btn btn-primary">저장</button>
-            <button type="button" id="closeManualModalBtn" class="btn btn-secondary" onclick="closeManualModal()">취소</button>
+          <div class="modal-actions-bar">
+            <button type="button" id="clearManualBtn" class="btn-modal btn-modal-delete" onclick="clearManualEntry()">
+              <span>🗑️ 기록 삭제</span>
+            </button>
+            <div class="modal-actions-right">
+              <button type="button" id="closeManualModalBtn" class="btn-modal btn-modal-cancel" onclick="closeManualModal()">취소</button>
+              <button type="submit" class="btn-modal btn-modal-save">저장하기</button>
+            </div>
           </div>
         </form>
       </div>

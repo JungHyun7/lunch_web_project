@@ -746,7 +746,7 @@ function resetPointer() {
   const wheelPointer = document.querySelector(".wheel-pointer");
   if (wheelPointer) {
     if (pointerTickTimeout) clearTimeout(pointerTickTimeout);
-    wheelPointer.style.transform = "translateX(-50%) rotate(-45deg)";
+    wheelPointer.style.transform = "translateX(-50%) rotate(0deg)";
   }
 }
 
@@ -756,11 +756,11 @@ function triggerPointerTick(isBoost = false) {
 
   if (pointerTickTimeout) clearTimeout(pointerTickTimeout);
 
-  const angle = isBoost ? -25 : -33;
+  const angle = isBoost ? 18 : 10;
   wheelPointer.style.transform = `translateX(-50%) rotate(${angle}deg)`;
 
   pointerTickTimeout = setTimeout(() => {
-    wheelPointer.style.transform = "translateX(-50%) rotate(-45deg)";
+    wheelPointer.style.transform = "translateX(-50%) rotate(0deg)";
   }, 60);
 
   playTickSound();

@@ -1523,3 +1523,100 @@ body {
     width: 100%;
   }
 }
+
+/* Restaurant Tag Actions (Edit & Remove) */
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--card-bg);
+  border: var(--border);
+  border-radius: 10px;
+  box-shadow: 2px 2px 0px var(--border-color);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.tag-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0px var(--border-color);
+}
+
+.tag-edit, .tag-remove {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  line-height: 1;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.tag-edit:hover {
+  background: rgba(140, 188, 255, 0.3);
+  transform: scale(1.15);
+}
+
+.tag-remove {
+  color: #ef4444;
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+.tag-remove:hover {
+  background: rgba(239, 68, 68, 0.15);
+  transform: scale(1.15);
+}
+
+/* DB Status Badge Soft Aesthetics (No Aggressive Red) */
+.db-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border: var(--border);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px var(--border-color);
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.db-status-badge:hover {
+  transform: translateY(-1px);
+}
+
+.db-status-badge.online {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.db-status-badge.offline {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+[data-theme="dark"] .db-status-badge.offline {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.db-status-badge .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.db-status-badge.online .status-dot {
+  background-color: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+.db-status-badge.offline .status-dot {
+  background-color: #94a3b8;
+}
+

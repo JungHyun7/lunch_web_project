@@ -269,6 +269,68 @@
         </form>
       </div>
     </div>
+
+    <!-- Edit Restaurant Details Modal -->
+    <div id="editRestaurantModal" class="modal-overlay hidden">
+      <div class="modal-card manual-modal-card">
+        <div class="modal-header-row">
+          <div class="modal-icon-badge">✏️</div>
+          <div class="modal-header-text">
+            <h3 class="modal-title-main">식당 정보 수정</h3>
+            <p class="modal-desc-sub">식당 이름, 카테고리, 가격, 대표메뉴 수정</p>
+          </div>
+          <button type="button" class="modal-close-x" onclick="closeEditRestaurantModal()" aria-label="닫기">&times;</button>
+        </div>
+
+        <form id="editRestaurantForm" class="manual-form-container">
+          <input type="hidden" id="editRestaurantId" />
+          <div class="manual-fields-wrapper" style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <div>
+              <label style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">식당 이름</label>
+              <div class="input-group-modern">
+                <span class="input-lead-icon">🍱</span>
+                <input type="text" id="editRestaurantName" required placeholder="식당 이름" maxlength="20" />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">카테고리</label>
+                <select id="editCategorySelect" class="form-select-modern" style="width: 100%; padding: 0.6rem; border: var(--border); border-radius: 8px; font-weight: 700;">
+                  <option value="한식">한식</option>
+                  <option value="일식">일식</option>
+                  <option value="중식">중식</option>
+                  <option value="양식">양식</option>
+                  <option value="아시안">아시안</option>
+                  <option value="기타">기타</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">평균 가격(원)</label>
+                <div class="input-group-modern">
+                  <span class="input-lead-icon">💳</span>
+                  <input type="number" id="editPriceInput" placeholder="가격 입력" min="0" step="500" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">대표 메뉴</label>
+              <div class="input-group-modern">
+                <span class="input-lead-icon">⭐</span>
+                <input type="text" id="editMainDishInput" placeholder="대표 메뉴 입력" maxlength="25" />
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions-bar" style="margin-top: 1.2rem;">
+            <button type="button" class="btn-modal btn-modal-cancel" onclick="closeEditRestaurantModal()">취소</button>
+            <button type="submit" class="btn-modal btn-modal-save">수정 완료</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <canvas id="confettiCanvas" class="confetti-canvas"></canvas>

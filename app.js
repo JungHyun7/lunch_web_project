@@ -499,12 +499,13 @@ function renderRestaurantTags() {
       <span class="cat-badge ${catClass}">${item.category || '기타'}</span>
       <strong>${item.name}</strong>${mainDishText}
       <span class="tag-price">${formatPrice(item.price)}</span>
+      <button class="tag-edit" title="식당 수정" data-id="${item.id || item.name}">✏️</button>
       <button class="tag-remove" title="식당 삭제" data-id="${item.id || item.name}">&times;</button>
     `;
 
     // Click on tag to toggle selection
     tag.addEventListener("click", (e) => {
-      if (e.target.classList.contains("tag-remove")) return;
+      if (e.target.classList.contains("tag-remove") || e.target.classList.contains("tag-edit")) return;
       toggleRestaurantSelection(item.id || item.name);
     });
 
@@ -512,6 +513,11 @@ function renderRestaurantTags() {
     checkbox.addEventListener("click", (e) => {
       e.stopPropagation();
       toggleRestaurantSelection(item.id || item.name);
+    });
+
+    tag.querySelector(".tag-edit").addEventListener("click", (e) => {
+      e.stopPropagation();
+      openEditRestaurantModal(item.id || item.name);
     });
 
     tag.querySelector(".tag-remove").addEventListener("click", (e) => {
@@ -949,6 +955,67 @@ function openManualModalForDate(dateStr) {
 window.openManualModalForDay = openManualModalForDay;
 window.openManualModalForDate = openManualModalForDate;
 
+function openEditRestaurantModal(idOrName) {
+  const target = restaurants.find(r => r.id === idOrName || r.name === idOrName);
+  if (!target) return;
+
+  const idInput = document.getElementById("editRestaurantId");
+  const nameInput = document.getElementById("editRestaurantName");
+  const catSelect = document.getElementById("editCategorySelect");
+  const priceInput = document.getElementById("editPriceInput");
+  const dishInput = document.getElementById("editMainDishInput");
+
+  if (idInput) idInput.value = target.id || target.name;
+  if (nameInput) nameInput.value = target.name;
+  if (catSelect) catSelect.value = target.category || "한식";
+  if (priceInput) priceInput.value = target.price || 10000;
+  if (dishInput) dishInput.value = target.mainDish === "없음" ? "" : (target.mainDish || "");
+
+  const modal = document.getElementById("editRestaurantModal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    modal.style.setProperty("display", "flex", "important");
+    modal.style.setProperty("opacity", "1", "important");
+    modal.style.setProperty("pointer-events", "auto", "important");
+  }
+}
+
+function closeEditRestaurantModal() {
+  const modal = document.getElementById("editRestaurantModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.setProperty("display", "none", "important");
+    modal.style.setProperty("opacity", "0", "important");
+    modal.style.setProperty("pointer-events", "none", "important");
+  }
+}
+
+function saveEditRestaurant(e) {
+  if (e) e.preventDefault();
+  const id = document.getElementById("editRestaurantId").value;
+  const name = document.getElementById("editRestaurantName").value.trim();
+  const category = document.getElementById("editCategorySelect").value;
+  const price = parseInt(document.getElementById("editPriceInput").value) || 10000;
+  const mainDish = document.getElementById("editMainDishInput").value.trim() || "없음";
+
+  if (!name) return;
+
+  const index = restaurants.findIndex(r => r.id === id || r.name === id);
+  if (index !== -1) {
+    restaurants[index].name = name;
+    restaurants[index].category = category;
+    restaurants[index].price = price;
+    restaurants[index].mainDish = mainDish;
+
+    saveRestaurantList();
+    renderUI();
+    closeEditRestaurantModal();
+  }
+}
+
+window.openEditRestaurantModal = openEditRestaurantModal;
+window.closeEditRestaurantModal = closeEditRestaurantModal;
+
 function renderQuickTags() {
   manualQuickTags.innerHTML = "";
   restaurants.forEach(item => {
@@ -1232,6 +1299,18 @@ document.addEventListener("DOMContentLoaded", () => {
   manualModal.addEventListener("click", (e) => {
     if (e.target === manualModal) closeManualModal();
   });
+
+  const editRestaurantForm = document.getElementById("editRestaurantForm");
+  if (editRestaurantForm) {
+    editRestaurantForm.addEventListener("submit", saveEditRestaurant);
+  }
+
+  const editRestaurantModal = document.getElementById("editRestaurantModal");
+  if (editRestaurantModal) {
+    editRestaurantModal.addEventListener("click", (e) => {
+      if (e.target === editRestaurantModal) closeEditRestaurantModal();
+    });
+  }
 
   // Calendar Controls
   prevMonthBtn.addEventListener("click", () => {

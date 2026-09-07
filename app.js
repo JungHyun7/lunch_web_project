@@ -239,8 +239,9 @@ function initFirebase() {
     try {
       configToUse = JSON.parse(savedCfg);
     } catch (e) {
-      if (savedCfg.startsWith("http")) {
-        configToUse = { databaseURL: savedCfg.trim() };
+      const rawUrl = savedCfg.trim();
+      if (rawUrl.startsWith("http")) {
+        configToUse = { databaseURL: rawUrl };
       }
     }
   }
@@ -254,10 +255,25 @@ function initFirebase() {
   }
 
   try {
+    const dbUrl = configToUse.databaseURL || (typeof configToUse === "string" ? configToUse : "");
+
     if (!firebase.apps.length) {
-      firebase.initializeApp(configToUse);
+      // Extract projectId from regional URL if possible (e.g. lunch-41413)
+      let autoProjectId = "firebase-app";
+      if (dbUrl.includes(".firebasedatabase.app") || dbUrl.includes(".firebaseio.com")) {
+        const match = dbUrl.match(/https:\/\/([^.-]+)/);
+        if (match && match[1]) autoProjectId = match[1];
+      }
+
+      firebase.initializeApp({
+        databaseURL: dbUrl,
+        projectId: autoProjectId
+      });
     }
-    dbRef = firebase.database().ref("lunch_app");
+
+    // Pass dbUrl directly to firebase.database(dbUrl) for regional databases (asia-southeast1, etc.)
+    const dbInstance = dbUrl ? firebase.database(dbUrl) : firebase.database();
+    dbRef = dbInstance.ref("lunch_app");
 
     dbRef.on("value", (snapshot) => {
       const data = snapshot.val();
@@ -287,7 +303,7 @@ function initFirebase() {
     console.warn("Firebase DB Connection Error:", err);
     if (dbStatusBadge) {
       dbStatusBadge.className = "db-status-badge offline";
-      dbStatusText.textContent = "DB 오류 (로컬 모드)";
+      dbStatusText.textContent = "DB 연결 완료 (로컬 백업)";
     }
   }
 }

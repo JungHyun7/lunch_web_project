@@ -386,17 +386,11 @@ function getAvailableCandidates() {
 
   candidates = candidates.filter(item => !usedWinnerNames.includes(item.name));
 
-  // 2. Price Filter Condition (8천원, 1만원, 1.2만원, 1.5만원 세분화)
-  if (priceFilter === "under8k") {
-    candidates = candidates.filter(item => item.price <= 8000);
-  } else if (priceFilter === "under10k") {
-    candidates = candidates.filter(item => item.price <= 10000);
-  } else if (priceFilter === "under12k") {
+  // 2. Price Filter Condition (12,000원 기준)
+  if (priceFilter === "under12k") {
     candidates = candidates.filter(item => item.price <= 12000);
-  } else if (priceFilter === "under15k") {
-    candidates = candidates.filter(item => item.price <= 15000);
-  } else if (priceFilter === "over15k") {
-    candidates = candidates.filter(item => item.price > 15000);
+  } else if (priceFilter === "over12k") {
+    candidates = candidates.filter(item => item.price > 12000);
   }
 
   // 3. Main Dish Uniqueness Condition (대표메뉴 동일 주간 중복 방지)

@@ -15,7 +15,7 @@
     href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap"
     rel="stylesheet">
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=20260907_v5" />
+  <link rel="stylesheet" href="style.css?v=20260907_v6" />
 </head>
 
 <body>
@@ -25,7 +25,7 @@
       <div class="hero-header-content">
         <p class="eyebrow">⚡ LUNCH ROULETTE & WEEKLY CALENDAR</p>
         <h1 class="hero-main-title">
-          오늘 뭐 먹지? <span>식당 룰렛 & 방문 달력</span>
+          <span>식당 룰렛 & 방문 달력</span>
         </h1>
       </div>
       <div class="header-right-actions">
@@ -49,11 +49,8 @@
           <span class="filter-label">💰 가격 필터</span>
           <div class="filter-group">
             <button class="filter-btn active" data-filter="all">전체</button>
-            <button class="filter-btn" data-filter="under8k">~8천원</button>
-            <button class="filter-btn" data-filter="under10k">~1만원</button>
-            <button class="filter-btn" data-filter="under12k">~1.2만원</button>
-            <button class="filter-btn" data-filter="under15k">~1.5만원</button>
-            <button class="filter-btn" data-filter="over15k">1.5만원+</button>
+            <button class="filter-btn" data-filter="under12k">12,000원 이하</button>
+            <button class="filter-btn" data-filter="over12k">12,000원 초과</button>
           </div>
         </div>
 
@@ -156,7 +153,7 @@
               </select>
             </div>
             <div class="form-row">
-              <input type="number" id="priceInput" placeholder="가격 (원)" min="0" step="500" required />
+              <input type="number" id="priceInput" placeholder="가격 (원, 자유 입력 가능)" min="0" />
               <input type="text" id="mainDishInput" placeholder="대표 메뉴 (선택)" maxlength="20" />
             </div>
             <button type="submit" class="btn btn-add btn-block">➕ 식당 추가</button>
@@ -284,7 +281,8 @@
             <h3 class="modal-title-main">식당 정보 수정</h3>
             <p class="modal-desc-sub">식당 이름, 카테고리, 가격, 대표메뉴 수정</p>
           </div>
-          <button type="button" class="modal-close-x" onclick="closeEditRestaurantModal()" aria-label="닫기">&times;</button>
+          <button type="button" class="modal-close-x" onclick="closeEditRestaurantModal()"
+            aria-label="닫기">&times;</button>
         </div>
 
         <form id="editRestaurantForm" class="manual-form-container">
@@ -301,7 +299,8 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
               <div>
                 <label style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">카테고리</label>
-                <select id="editCategorySelect" class="form-select-modern" style="width: 100%; padding: 0.6rem; border: var(--border); border-radius: 8px; font-weight: 700;">
+                <select id="editCategorySelect" class="form-select-modern"
+                  style="width: 100%; padding: 0.6rem; border: var(--border); border-radius: 8px; font-weight: 700;">
                   <option value="한식">한식</option>
                   <option value="일식">일식</option>
                   <option value="중식">중식</option>
@@ -315,7 +314,7 @@
                 <label style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">평균 가격(원)</label>
                 <div class="input-group-modern">
                   <span class="input-lead-icon">💳</span>
-                  <input type="number" id="editPriceInput" placeholder="가격 입력" min="0" step="500" />
+                  <input type="number" id="editPriceInput" placeholder="자유 가격 입력 (제한 없음)" min="0" />
                 </div>
               </div>
             </div>
@@ -340,7 +339,7 @@
 
   <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
 
-  <script src="app.js?v=20260907_v5"></script>
+  <script src="app.js?v=20260907_v6"></script>
 </body>
 
 </html>

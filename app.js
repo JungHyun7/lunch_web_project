@@ -181,74 +181,34 @@ function loadState() {
 }
 
 // ==========================================================================
-// Firebase Realtime DB Synchronization Logic
+// Native Firebase Realtime DB Synchronization Engine (Zero External SDK)
 // ==========================================================================
-const DEFAULT_FIREBASE_URL = "https://lunch-41413-default-rtdb.asia-southeast1.firebasedatabase.app/";
-let dbRef = null;
+const DEFAULT_FIREBASE_URL = "https://lunch-41413-default-rtdb.asia-southeast1.firebasedatabase.app";
 let isDbOnline = false;
+let eventSourceInstance = null;
 const STORAGE_KEY_FIREBASE_CFG = "roulette_firebase_config_v1";
+
+function getCleanDbUrl() {
+  let url = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG) || DEFAULT_FIREBASE_URL;
+  if (!url || typeof url !== "string" || !url.startsWith("http")) {
+    url = DEFAULT_FIREBASE_URL;
+  }
+  return url.trim().replace(/\/+$/, "");
+}
 
 function initFirebase() {
   const dbStatusBadge = document.getElementById("dbStatusBadge");
   const dbStatusText = document.getElementById("dbStatusText");
 
-  if (typeof firebase === "undefined") {
-    if (dbStatusBadge) {
-      dbStatusBadge.className = "db-status-badge offline";
-      dbStatusText.textContent = "로컬 모드";
-    }
-    return;
-  }
+  const baseUrl = getCleanDbUrl();
+  const jsonUrl = `${baseUrl}/lunch_app.json`;
 
-  let savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG);
-  if (!savedCfg || savedCfg.trim() === "") {
-    savedCfg = DEFAULT_FIREBASE_URL;
-    localStorage.setItem(STORAGE_KEY_FIREBASE_CFG, DEFAULT_FIREBASE_URL);
-  }
-  let configToUse = null;
-
-  if (savedCfg) {
-    try {
-      configToUse = JSON.parse(savedCfg);
-    } catch (e) {
-      const rawUrl = savedCfg.trim();
-      if (rawUrl.startsWith("http")) {
-        configToUse = { databaseURL: rawUrl };
-      }
-    }
-  }
-
-  if (!configToUse || (!configToUse.databaseURL && !configToUse.apiKey)) {
-    if (dbStatusBadge) {
-      dbStatusBadge.className = "db-status-badge offline";
-      dbStatusText.textContent = "로컬 모드";
-    }
-    return;
-  }
-
-  try {
-    const dbUrl = configToUse.databaseURL || (typeof configToUse === "string" ? configToUse : "");
-
-    if (!firebase.apps.length) {
-      // Extract projectId from regional URL if possible (e.g. lunch-41413)
-      let autoProjectId = "firebase-app";
-      if (dbUrl.includes(".firebasedatabase.app") || dbUrl.includes(".firebaseio.com")) {
-        const match = dbUrl.match(/https:\/\/([^.-]+)/);
-        if (match && match[1]) autoProjectId = match[1];
-      }
-
-      firebase.initializeApp({
-        databaseURL: dbUrl,
-        projectId: autoProjectId
-      });
-    }
-
-    // Pass dbUrl directly to firebase.database(dbUrl) for regional databases (asia-southeast1, etc.)
-    const dbInstance = dbUrl ? firebase.database(dbUrl) : firebase.database();
-    dbRef = dbInstance.ref("lunch_app");
-
-    dbRef.on("value", (snapshot) => {
-      const data = snapshot.val();
+  fetch(jsonUrl)
+    .then(response => {
+      if (!response.ok) throw new Error("HTTP error " + response.status);
+      return response.json();
+    })
+    .then(data => {
       if (data) {
         if (data.restaurants) {
           restaurants = data.restaurants;
@@ -263,36 +223,93 @@ function initFirebase() {
           localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(monthlyHistory));
         }
         renderUI();
+      } else {
+        syncToFirebase();
+      }
+
+      isDbOnline = true;
+      if (dbStatusBadge) {
+        dbStatusBadge.className = "db-status-badge online";
+        dbStatusText.textContent = "실시간 DB 연결됨";
+      }
+
+      setupEventSource(jsonUrl);
+    })
+    .catch(err => {
+      console.warn("Firebase REST fetch fallback to local:", err);
+      isDbOnline = false;
+      if (dbStatusBadge) {
+        dbStatusBadge.className = "db-status-badge offline";
+        dbStatusText.textContent = "로컬 모드";
       }
     });
+}
 
-    isDbOnline = true;
-    if (dbStatusBadge) {
-      dbStatusBadge.className = "db-status-badge online";
-      dbStatusText.textContent = "실시간 DB 연결됨";
+function setupEventSource(jsonUrl) {
+  try {
+    if (typeof EventSource !== "undefined") {
+      if (eventSourceInstance) eventSourceInstance.close();
+      eventSourceInstance = new EventSource(jsonUrl);
+      eventSourceInstance.addEventListener("put", (e) => {
+        try {
+          const parsed = JSON.parse(e.data);
+          if (parsed && parsed.data) {
+            const data = parsed.data;
+            if (data.restaurants) {
+              restaurants = data.restaurants;
+              localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));
+            }
+            if (data.weeklyWinners) {
+              weeklyWinners = data.weeklyWinners;
+              localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
+            }
+            if (data.monthlyHistory) {
+              monthlyHistory = data.monthlyHistory;
+              localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(monthlyHistory));
+            }
+            renderUI();
+          }
+        } catch (err) {
+          // ignore stream parse errors
+        }
+      });
     }
-  } catch (err) {
-    console.warn("Firebase DB Connection Error:", err);
-    if (dbStatusBadge) {
-      dbStatusBadge.className = "db-status-badge offline";
-      dbStatusText.textContent = "DB 연결 완료 (로컬 백업)";
-    }
+  } catch (e) {
+    console.warn("EventSource setup warning:", e);
   }
 }
 
 function syncToFirebase() {
-  if (dbRef && isDbOnline) {
-    try {
-      dbRef.set({
-        restaurants: restaurants,
-        weeklyWinners: weeklyWinners,
-        monthlyHistory: monthlyHistory,
-        updatedAt: Date.now()
-      });
-    } catch (e) {
-      console.error("Firebase sync error:", e);
-    }
-  }
+  const baseUrl = getCleanDbUrl();
+  const jsonUrl = `${baseUrl}/lunch_app.json`;
+
+  const payload = {
+    restaurants: restaurants,
+    weeklyWinners: weeklyWinners,
+    monthlyHistory: monthlyHistory,
+    updatedAt: Date.now()
+  };
+
+  fetch(jsonUrl, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(() => {
+      isDbOnline = true;
+      const dbStatusBadge = document.getElementById("dbStatusBadge");
+      const dbStatusText = document.getElementById("dbStatusText");
+      if (dbStatusBadge) {
+        dbStatusBadge.className = "db-status-badge online";
+        dbStatusText.textContent = "실시간 DB 연결됨";
+      }
+    })
+    .catch(err => {
+      console.warn("Sync to Firebase failed:", err);
+    });
 }
 
 function openDbModal() {

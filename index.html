@@ -4,38 +4,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>주간 식당 추천 룰렛 & 방문 달력</title>
-  <!-- Google Fonts -->
+  <title>KTL 주간 식당 룰렛 & 방문 달력</title>
+  <!-- Google Fonts: DM Mono & Space Grotesk & Noto Sans KR -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <div class="app-container">
-    <!-- Header -->
-    <header class="header ktl-header">
-      <div class="logo-area">
-        <div class="ktl-badge-logo">
-          <span class="ktl-text">KTL</span>
-        </div>
-        <div>
-          <div class="header-title-row">
-            <h1>주간 식당 룰렛 & 방문 달력</h1>
-          </div>
-        </div>
+  <div class="app-shell">
+    <!-- Header Hero Bento Card -->
+    <header class="header hero-bento bento-card">
+      <div class="hero-header-content">
+        <p class="eyebrow">⚡ KTL OPERATIONS · LUNCH ROULETTE & CALENDAR</p>
+        <h1 class="hero-main-title">
+          KTL 주간 식당 <span>룰렛 & 방문 달력</span>
+        </h1>
+        <p class="hero-sub-text">오늘 뭐 먹지? 고민될 땐 룰렛을 돌리고, 주간 당첨 기록 및 월간 방문 달력을 한눈에 관리하세요!</p>
       </div>
       <div class="header-right-actions">
         <div id="dbStatusBadge" class="db-status-badge offline" title="실시간 DB 연결 상태">
           <span class="status-dot"></span>
           <span id="dbStatusText">연결 중...</span>
         </div>
-        <button id="themeToggleBtn" class="btn btn-secondary btn-sm" title="다크/라이트 모드 전환">
-          <span id="themeIcon">🌙</span> <span id="themeText">다크 모드</span>
+        <button id="themeToggleBtn" class="bento-btn bento-btn-secondary" title="다크/라이트 모드 전환">
+          <span id="themeIcon">🌙</span> <span id="themeText">드림 모드</span>
         </button>
       </div>
     </header>

@@ -15,8 +15,12 @@ const DEFAULT_RESTAURANTS = [
 ];
 
 const SECTOR_COLORS = [
-  "#4a3328", "#c26d47", "#8c5d3b", "#b45309", "#6b4423",
-  "#d97706", "#a16207", "#5c3d2e", "#9a3412", "#78350f"
+  "#ffd84d", // Neobrutalist Yellow
+  "#8cbcff", // Neobrutalist Blue
+  "#ff9fca", // Neobrutalist Pink
+  "#a9e76c", // Neobrutalist Green
+  "#b99cff", // Neobrutalist Purple
+  "#ff9d57"  // Neobrutalist Orange
 ];
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
@@ -672,8 +676,8 @@ function drawWheel() {
     ctx.closePath();
     ctx.fillStyle = SECTOR_COLORS[i % SECTOR_COLORS.length];
     ctx.fill();
-    ctx.strokeStyle = "rgba(15, 23, 42, 0.6)";
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#171717";
+    ctx.lineWidth = 3.5;
     ctx.stroke();
 
     // Sector Text & Category Badge
@@ -681,8 +685,8 @@ function drawWheel() {
     ctx.translate(centerX, centerY);
     ctx.rotate(startAngle + sliceAngle / 2);
     ctx.textAlign = "right";
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 15px 'Noto Sans KR', sans-serif";
+    ctx.fillStyle = "#171717";
+    ctx.font = "700 15px 'Space Grotesk', 'Noto Sans KR', sans-serif";
     ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
     ctx.shadowBlur = 4;
     ctx.fillText(item.name, radius - 24, 4);

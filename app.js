@@ -608,9 +608,10 @@ function renderCalendar() {
 // Canvas Wheel Rendering & Physics Engine
 // ==========================================================================
 function drawWheel() {
+  if (!wheelCanvas || !ctx) return;
   const candidates = getAvailableCandidates();
   const count = candidates.length;
-  candidatesCountBadge.textContent = `남은 후보: ${count}곳`;
+  if (candidatesCountBadge) candidatesCountBadge.textContent = `남은 후보: ${count}곳`;
 
   ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
 

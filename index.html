@@ -199,7 +199,7 @@
         </div>
         <p class="modal-desc">이번 주 및 월간 달력에 자동으로 기록되었습니다!</p>
         <div class="modal-actions">
-          <button id="closeModalBtn" class="btn btn-primary">확인 (기록하기)</button>
+          <button id="closeModalBtn" class="btn btn-primary" onclick="closeWinnerModal()">확인 (기록하기)</button>
         </div>
       </div>
     </div>
@@ -209,13 +209,13 @@
       <div class="modal-content card manual-modal-content">
         <div class="modal-emoji">✏️</div>
         <h3 class="modal-subtitle" id="manualModalTitle">식당 등록 및 휴무일 설정</h3>
-        <p class="modal-desc">룰렛 대신 다녀온 식당을 등록하거나, 휴무일/공휴일로 설정하세요.</p>
+        <p class="modal-desc">룰렛 대신 다녀온 식당을 등록하거나, 휴무일로 설정하세요.</p>
 
         <form id="manualEntryForm" class="manual-form">
           <div class="holiday-toggle-row">
             <label class="checkbox-label">
               <input type="checkbox" id="holidayCheckbox" />
-              <span>🏖️ 이 날을 <strong>휴무일 / 공휴일</strong>로 지정</span>
+              <span>🏖️ 이 날을 <strong>휴무일</strong>로 지정</span>
             </label>
           </div>
 
@@ -228,9 +228,9 @@
           </div>
 
           <div class="modal-actions gap-btn">
-            <button type="button" id="clearManualBtn" class="btn btn-secondary btn-danger-text">삭제 (기록 지우기)</button>
+            <button type="button" id="clearManualBtn" class="btn btn-secondary btn-danger-text" onclick="clearManualEntry()">삭제 (기록 지우기)</button>
             <button type="submit" class="btn btn-primary">저장</button>
-            <button type="button" id="closeManualModalBtn" class="btn btn-secondary">취소</button>
+            <button type="button" id="closeManualModalBtn" class="btn btn-secondary" onclick="closeManualModal()">취소</button>
           </div>
         </form>
       </div>

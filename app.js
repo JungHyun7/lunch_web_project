@@ -444,8 +444,8 @@ function renderWeeklyGrid() {
       valEl.textContent = "미정";
       if (subEl) subEl.textContent = "";
     } else if (winnerData.type === "holiday") {
-      valEl.textContent = "🏖️ 휴무일";
-      if (subEl) subEl.textContent = "공휴일/쉬는날";
+      valEl.textContent = "🏖️ 휴무";
+      if (subEl) subEl.textContent = "쉬는 날";
       parentBox.classList.add("is-holiday");
     } else {
       const name = typeof winnerData === 'string' ? winnerData : winnerData.name;
@@ -567,7 +567,7 @@ function renderCalendar() {
 
     if (record) {
       if (record.type === "holiday") {
-        contentHtml = `<div class="cal-holiday-tag">🏖️ 휴무일</div>`;
+        contentHtml = `<div class="cal-holiday-tag">🏖️ 휴무</div>`;
       } else {
         const catClass = `cat-${record.category || '기타'}`;
         contentHtml = `
@@ -941,10 +941,25 @@ function renderQuickTags() {
 }
 
 function closeManualModal() {
-  manualModal.classList.add("hidden");
-  manualModal.style.setProperty("display", "none", "important");
+  const modal = document.getElementById("manualModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.setProperty("display", "none", "important");
+  }
   selectedManualDay = null;
 }
+
+function closeWinnerModal() {
+  const modal = document.getElementById("winnerModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.setProperty("display", "none", "important");
+  }
+}
+
+window.closeManualModal = closeManualModal;
+window.closeWinnerModal = closeWinnerModal;
+window.clearManualEntry = clearManualEntry;
 
 function saveManualEntry() {
   if (!selectedManualDay) return;
@@ -1006,6 +1021,7 @@ function clearManualEntry() {
   renderUI();
   closeManualModal();
 }
+window.clearManualEntry = clearManualEntry;
 
 // ==========================================================================
 // Confetti Animation Engine

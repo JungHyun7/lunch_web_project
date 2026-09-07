@@ -647,6 +647,16 @@ function renderCalendar() {
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
+  const { weekDates } = getWeekDates();
+  const currentWeekMap = {};
+  if (weekDates) {
+    DAYS.forEach(dayKey => {
+      if (weekDates[dayKey]) {
+        currentWeekMap[weekDates[dayKey].isoDateStr] = weeklyWinners[dayKey];
+      }
+    });
+  }
+
   // 1. Previous Month Leading Days
   for (let i = firstDay - 1; i >= 0; i--) {
     const dayNum = daysInPrevMonth - i;
@@ -668,7 +678,29 @@ function renderCalendar() {
     if (dayOfWeek === 6) cell.classList.add("sat");
     if (dateStr === todayStr) cell.classList.add("today");
 
-    const record = monthlyHistory[dateStr];
+    let record = monthlyHistory[dateStr];
+    if (currentWeekMap[dateStr] !== undefined) {
+      const w = currentWeekMap[dateStr];
+      if (!w) {
+        record = null;
+      } else if (w.type === "holiday") {
+        record = { type: "holiday" };
+      } else {
+        const rName = typeof w === 'string' ? w : (w.restaurantName || w.name || '식당');
+        const rCat = typeof w === 'object' ? (w.category || '기타') : '기타';
+        const rPrice = typeof w === 'object' ? (w.price || 0) : 0;
+        const rDish = typeof w === 'object' ? (w.mainDish || '') : '';
+        record = {
+          type: w.type || "winner",
+          restaurantName: rName,
+          name: rName,
+          category: rCat,
+          price: rPrice,
+          mainDish: rDish
+        };
+      }
+    }
+
     let contentHtml = "";
 
     if (record) {

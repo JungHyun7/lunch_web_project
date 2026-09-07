@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>주간 식당 추천 룰렛 & 방문 달력</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap"
+    rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header ktl-header">
+      <div class="logo-area">
+        <div class="ktl-badge-logo">
+          <span class="ktl-text">KTL</span>
+        </div>
+        <div>
+          <div class="header-title-row">
+            <h1>주간 식당 룰렛 & 방문 달력</h1>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="main-content">
+      <!-- Left Column: Roulette Section -->
+      <section class="roulette-section card">
+        <!-- 12,000원 Price Filter Control -->
+        <div class="filter-bar">
+          <span class="filter-label">💰 가격 기준:</span>
+          <div class="filter-group">
+            <button class="filter-btn active" data-filter="all">전체</button>
+            <button class="filter-btn" data-filter="under12k">12,000원 이하</button>
+            <button class="filter-btn" data-filter="over12k">12,000원 초과</button>
+          </div>
+        </div>
+
+        <div class="roulette-badge" id="candidatesCountBadge">남은 후보: 0곳</div>
+
+        <div class="wheel-wrapper">
+          <div class="wheel-pointer"></div>
+          <canvas id="wheelCanvas" width="420" height="420"></canvas>
+          <div class="wheel-center">
+            <span>GO!</span>
+          </div>
+        </div>
+
+        <button id="spinBtn" class="btn btn-primary btn-spin">
+          🎲 룰렛 돌리기!
+        </button>
+      </section>
+
+      <!-- Right Column: Weekly Schedule & Restaurant List -->
+      <div class="sidebar-section">
+        <!-- Weekly History Schedule -->
+        <section class="weekly-card card">
+          <div class="card-header">
+            <div>
+              <h2>📅 이번 주 (월~금) 당첨 식당</h2>
+              <p class="card-sub-hint">카드를 클릭하여 직접 입력하거나 휴무일로 지정할 수 있습니다.</p>
+            </div>
+            <span class="week-info" id="currentWeekInfo">2026.09.01 ~ 09.05</span>
+          </div>
+
+          <div class="weekly-grid">
+            <div class="day-box clickable" data-day="Mon" title="클릭하여 식당 입력 또는 휴무일 설정">
+              <div class="day-label" id="label-Mon">월요일</div>
+              <div class="day-value" id="day-Mon">미정</div>
+              <div class="day-sub-info" id="sub-Mon"></div>
+              <span class="edit-hint">✏️</span>
+            </div>
+            <div class="day-box clickable" data-day="Tue" title="클릭하여 식당 입력 또는 휴무일 설정">
+              <div class="day-label" id="label-Tue">화요일</div>
+              <div class="day-value" id="day-Tue">미정</div>
+              <div class="day-sub-info" id="sub-Tue"></div>
+              <span class="edit-hint">✏️</span>
+            </div>
+            <div class="day-box clickable" data-day="Wed" title="클릭하여 식당 입력 또는 휴무일 설정">
+              <div class="day-label" id="label-Wed">수요일</div>
+              <div class="day-value" id="day-Wed">미정</div>
+              <div class="day-sub-info" id="sub-Wed"></div>
+              <span class="edit-hint">✏️</span>
+            </div>
+            <div class="day-box clickable" data-day="Thu" title="클릭하여 식당 입력 또는 휴무일 설정">
+              <div class="day-label" id="label-Thu">목요일</div>
+              <div class="day-value" id="day-Thu">미정</div>
+              <div class="day-sub-info" id="sub-Thu"></div>
+              <span class="edit-hint">✏️</span>
+            </div>
+            <div class="day-box clickable" data-day="Fri" title="클릭하여 식당 입력 또는 휴무일 설정">
+              <div class="day-label" id="label-Fri">금요일</div>
+              <div class="day-value" id="day-Fri">미정</div>
+              <div class="day-sub-info" id="sub-Fri"></div>
+              <span class="edit-hint">✏️</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Restaurant Management List -->
+        <section class="restaurant-card card">
+          <div class="card-header">
+            <div>
+              <h2>🍱 식당 목록 상세 관리</h2>
+              <p class="card-sub-hint">원하는 식당만 선택(체크)하여 룰렛 후보에 포함시킬 수 있습니다.</p>
+            </div>
+            <div class="selection-actions">
+              <button id="selectAllBtn" class="btn-text">전체 선택</button>
+              <span class="divider">|</span>
+              <button id="deselectAllBtn" class="btn-text">전체 해제</button>
+            </div>
+          </div>
+
+          <form id="addRestaurantForm" class="add-form-expanded">
+            <div class="form-row">
+              <input type="text" id="restaurantInput" placeholder="식당 이름 (예: 홍콩반점)" maxlength="20" required />
+              <select id="categorySelect" required>
+                <option value="한식">한식</option>
+                <option value="중식">중식</option>
+                <option value="일식">일식</option>
+                <option value="양식">양식</option>
+                <option value="아시안">아시안</option>
+                <option value="기타">기타/패스트푸드</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <input type="number" id="priceInput" placeholder="가격(원) 예: 10000" min="0" step="500" required />
+              <input type="text" id="mainDishInput" placeholder="대표메뉴 (선택, 비워두면 없음)" maxlength="20" />
+            </div>
+            <button type="submit" class="btn btn-add btn-block">➕ 식당 추가하기</button>
+          </form>
+
+          <div class="restaurant-list-container">
+            <div id="restaurantList" class="restaurant-tags">
+              <!-- Dynamically populated tags with badges -->
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Monthly Calendar Section -->
+    <section class="calendar-section card">
+      <div class="calendar-header">
+        <div class="calendar-title-area">
+          <h2>🗓️ 월간 식당 방문 달력</h2>
+          <p class="calendar-sub">당첨 및 직접 기록한 당일 방문 식당이 달력에 자동 기록됩니다.</p>
+        </div>
+        <div class="calendar-nav">
+          <button id="prevMonthBtn" class="btn btn-icon">&lt;</button>
+          <span id="calendarMonthTitle" class="calendar-month-title">2026년 9월</span>
+          <button id="nextMonthBtn" class="btn btn-icon">&gt;</button>
+          <button id="todayMonthBtn" class="btn btn-sm">오늘</button>
+        </div>
+      </div>
+
+      <div class="calendar-grid-header">
+        <div class="day-name sun">일</div>
+        <div class="day-name">월</div>
+        <div class="day-name">화</div>
+        <div class="day-name">수</div>
+        <div class="day-name">목</div>
+        <div class="day-name">금</div>
+        <div class="day-name sat">토</div>
+      </div>
+
+      <div id="calendarGrid" class="calendar-grid">
+        <!-- Dynamically rendered calendar days -->
+      </div>
+    </section>
+
+    <!-- Winner Announcement Modal -->
+    <div id="winnerModal" class="modal-overlay hidden">
+      <div class="modal-content card">
+        <div class="modal-emoji">🎉</div>
+        <h3 class="modal-subtitle">오늘의 점심/저녁 식당 당첨!</h3>
+        <h2 id="winnerName" class="modal-title">식당 이름</h2>
+        <div id="winnerMeta" class="winner-meta">
+          <!-- Category badge, price, main dish -->
+        </div>
+        <p class="modal-desc">이번 주 및 월간 달력에 자동으로 기록되었습니다!</p>
+        <div class="modal-actions">
+          <button id="closeModalBtn" class="btn btn-primary">확인 (기록하기)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manual Entry & Holiday Modal -->
+    <div id="manualModal" class="modal-overlay hidden">
+      <div class="modal-content card manual-modal-content">
+        <div class="modal-emoji">✏️</div>
+        <h3 class="modal-subtitle" id="manualModalTitle">식당 등록 및 휴무일 설정</h3>
+        <p class="modal-desc">룰렛 대신 다녀온 식당을 등록하거나, 휴무일/공휴일로 설정하세요.</p>
+
+        <form id="manualEntryForm" class="manual-form">
+          <div class="holiday-toggle-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="holidayCheckbox" />
+              <span>🏖️ 이 날을 <strong>휴무일 / 공휴일</strong>로 지정</span>
+            </label>
+          </div>
+
+          <div id="manualInputFields">
+            <input type="text" id="manualRestaurantInput" placeholder="식당 이름 직접 입력..." maxlength="20" />
+            <div class="manual-quick-section">
+              <p class="quick-title">목록에서 빠르게 선택:</p>
+              <div id="manualQuickTags" class="manual-tags"></div>
+            </div>
+          </div>
+
+          <div class="modal-actions gap-btn">
+            <button type="button" id="clearManualBtn" class="btn btn-secondary btn-danger-text">삭제 (기록 지우기)</button>
+            <button type="submit" class="btn btn-primary">저장</button>
+            <button type="button" id="closeManualModalBtn" class="btn btn-secondary">취소</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

@@ -183,42 +183,10 @@ function loadState() {
 // ==========================================================================
 // Firebase Realtime DB Synchronization Logic
 // ==========================================================================
-// DB Modal Controller Functions (Top-Level Global Scope)
-// ==========================================================================
-function openDbModal() {
-  const dbModal = document.getElementById("dbModal");
-  const dbConfigInput = document.getElementById("dbConfigInput");
-  const savedCfg = localStorage.getItem("roulette_firebase_config_v1") || "";
-
-  if (dbModal) {
-    if (dbConfigInput) dbConfigInput.value = savedCfg;
-    dbModal.classList.remove("hidden");
-    dbModal.style.setProperty("display", "flex", "important");
-    dbModal.style.setProperty("opacity", "1", "important");
-    dbModal.style.setProperty("pointer-events", "auto", "important");
-  } else {
-    const inputUrl = prompt(
-      "Firebase Database URL을 입력해 주세요:\n(예: https://your-app-default-rtdb.firebaseio.com)",
-      savedCfg
-    );
-    if (inputUrl !== null && inputUrl.trim() !== "") {
-      localStorage.setItem("roulette_firebase_config_v1", inputUrl.trim());
-      if (typeof initFirebase === "function") initFirebase();
-      alert("✅ Firebase DB 연동 정보가 성공적으로 저장되었습니다!");
-    }
-  }
-}
-
-function hideDbModal() {
-  const dbModal = document.getElementById("dbModal");
-  if (dbModal) {
-    dbModal.classList.add("hidden");
-    dbModal.style.setProperty("display", "none", "important");
-  }
-}
-
-window.openDbModal = openDbModal;
-window.hideDbModal = hideDbModal;
+const DEFAULT_FIREBASE_URL = "https://lunch-41413-default-rtdb.asia-southeast1.firebasedatabase.app/";
+let dbRef = null;
+let isDbOnline = false;
+const STORAGE_KEY_FIREBASE_CFG = "roulette_firebase_config_v1";
 
 function initFirebase() {
   const dbStatusBadge = document.getElementById("dbStatusBadge");
@@ -232,7 +200,11 @@ function initFirebase() {
     return;
   }
 
-  const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG);
+  let savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG);
+  if (!savedCfg || savedCfg.trim() === "") {
+    savedCfg = DEFAULT_FIREBASE_URL;
+    localStorage.setItem(STORAGE_KEY_FIREBASE_CFG, DEFAULT_FIREBASE_URL);
+  }
   let configToUse = null;
 
   if (savedCfg) {
@@ -322,6 +294,31 @@ function syncToFirebase() {
     }
   }
 }
+
+function openDbModal() {
+  const dbModal = document.getElementById("dbModal");
+  const dbConfigInput = document.getElementById("dbConfigInput");
+  const savedCfg = localStorage.getItem(STORAGE_KEY_FIREBASE_CFG) || DEFAULT_FIREBASE_URL;
+
+  if (dbModal) {
+    if (dbConfigInput) dbConfigInput.value = savedCfg;
+    dbModal.classList.remove("hidden");
+    dbModal.style.setProperty("display", "flex", "important");
+    dbModal.style.setProperty("opacity", "1", "important");
+    dbModal.style.setProperty("pointer-events", "auto", "important");
+  }
+}
+
+function hideDbModal() {
+  const dbModal = document.getElementById("dbModal");
+  if (dbModal) {
+    dbModal.classList.add("hidden");
+    dbModal.style.setProperty("display", "none", "important");
+  }
+}
+
+window.openDbModal = openDbModal;
+window.hideDbModal = hideDbModal;
 
 function saveRestaurantList() {
   localStorage.setItem(STORAGE_KEY_LIST, JSON.stringify(restaurants));

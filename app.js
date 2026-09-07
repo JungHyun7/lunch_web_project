@@ -1,7 +1,18 @@
 // ==========================================================================
 // Default Constants & Initial Data
 // ==========================================================================
-const DEFAULT_RESTAURANTS = [];
+const DEFAULT_RESTAURANTS = [
+  { id: "r1", name: "KTL 구내식당", category: "한식", price: 7500, mainDish: "오늘의 백반", selected: true },
+  { id: "r2", name: "한옥집 김치찌개", category: "한식", price: 9500, mainDish: "돼지 김치찌개", selected: true },
+  { id: "r3", name: "원조 순대국밥", category: "한식", price: 10000, mainDish: "순대국", selected: true },
+  { id: "r4", name: "남산 돈까스", category: "양식", price: 11000, mainDish: "왕돈까스", selected: true },
+  { id: "r5", name: "홍콩반점", category: "중식", price: 9000, mainDish: "짜장면 / 짬뽕", selected: true },
+  { id: "r6", name: "미소야 라멘", category: "일식", price: 11500, mainDish: "돈카츠 라멘", selected: true },
+  { id: "r7", name: "전주 비빔밥", category: "한식", price: 10500, mainDish: "돌솥 비빔밥", selected: true },
+  { id: "r8", name: "포메인 쌀국수", category: "아시안", price: 12500, mainDish: "소고기 쌀국수", selected: true },
+  { id: "r9", name: "버거킹", category: "양식", price: 8900, mainDish: "와퍼 세트", selected: true },
+  { id: "r10", name: "스시야 모듬초밥", category: "일식", price: 14000, mainDish: "모듬초밥 (10p)", selected: true }
+];
 
 const SECTOR_COLORS = [
   "#4a3328", "#c26d47", "#8c5d3b", "#b45309", "#6b4423",
@@ -280,6 +291,7 @@ function setupEventSource(jsonUrl) {
 }
 
 function syncToFirebase() {
+  if (typeof fetch === "undefined") return;
   const baseUrl = getCleanDbUrl();
   const jsonUrl = `${baseUrl}/lunch_app.json`;
 
@@ -331,6 +343,8 @@ function hideDbModal() {
   if (dbModal) {
     dbModal.classList.add("hidden");
     dbModal.style.setProperty("display", "none", "important");
+    dbModal.style.setProperty("opacity", "0", "important");
+    dbModal.style.setProperty("pointer-events", "none", "important");
   }
 }
 
@@ -874,6 +888,9 @@ function resetWeek() {
   }
 }
 
+window.resetToDefault = resetToDefault;
+window.resetWeek = resetWeek;
+
 // ==========================================================================
 // Manual Modal & Holiday Operations
 // ==========================================================================
@@ -945,6 +962,8 @@ function closeManualModal() {
   if (modal) {
     modal.classList.add("hidden");
     modal.style.setProperty("display", "none", "important");
+    modal.style.setProperty("opacity", "0", "important");
+    modal.style.setProperty("pointer-events", "none", "important");
   }
   selectedManualDay = null;
 }
@@ -954,6 +973,8 @@ function closeWinnerModal() {
   if (modal) {
     modal.classList.add("hidden");
     modal.style.setProperty("display", "none", "important");
+    modal.style.setProperty("opacity", "0", "important");
+    modal.style.setProperty("pointer-events", "none", "important");
   }
 }
 
@@ -1275,8 +1296,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (confirm("실시간 DB 연동을 해제하고 로컬 모드로 전환하시겠습니까?")) {
         localStorage.removeItem(STORAGE_KEY_FIREBASE_CFG);
         isDbOnline = false;
-        if (dbRef) dbRef.off();
-        dbRef = null;
+        if (typeof eventSourceInstance !== "undefined" && eventSourceInstance) {
+          eventSourceInstance.close();
+          eventSourceInstance = null;
+        }
 
         const dbStatusBadge = document.getElementById("dbStatusBadge");
         const dbStatusText = document.getElementById("dbStatusText");
@@ -1288,8 +1311,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
-  // Initialize Firebase DB if config exists
-  initFirebase();
 });
 

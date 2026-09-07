@@ -60,7 +60,7 @@
         <div class="wheel-wrapper">
           <div class="wheel-pointer"></div>
           <canvas id="wheelCanvas" width="420" height="420"></canvas>
-          <div class="wheel-center">
+          <div class="wheel-center" onclick="spinWheel()" style="cursor: pointer;" title="룰렛 돌리기">
             <span>GO!</span>
           </div>
         </div>
@@ -79,7 +79,10 @@
               <h2>📅 이번 주 (월~금) 당첨 식당</h2>
               <p class="card-sub-hint">카드를 클릭하여 직접 입력하거나 휴무일로 지정할 수 있습니다.</p>
             </div>
-            <span class="week-info" id="currentWeekInfo">2026.09.01 ~ 09.05</span>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="week-info" id="currentWeekInfo">2026.09.01 ~ 09.05</span>
+              <button id="resetWeekBtn" class="btn btn-secondary btn-sm" onclick="resetWeek()" title="주간 당첨 기록 리셋">🔄 리셋</button>
+            </div>
           </div>
 
           <div class="weekly-grid">
@@ -127,6 +130,8 @@
               <button id="selectAllBtn" class="btn-text">전체 선택</button>
               <span class="divider">|</span>
               <button id="deselectAllBtn" class="btn-text">전체 해제</button>
+              <span class="divider">|</span>
+              <button id="resetDefaultBtn" class="btn-text" onclick="resetToDefault()">기본 목록 복원</button>
             </div>
           </div>
 

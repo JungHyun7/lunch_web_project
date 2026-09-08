@@ -1921,10 +1921,10 @@ body {
 }
 
 /* ==========================================================================
-   USER GUIDE BENTO MODAL STYLES
+   USER STEP-BY-STEP GUIDE MODAL STYLES
    ========================================================================== */
 .guide-modal-card {
-  max-width: 820px;
+  max-width: 860px;
   width: 95%;
   max-height: 90vh;
   overflow-y: auto;
@@ -1940,96 +1940,119 @@ body {
   color: #ffffff !important;
 }
 
-.guide-bento-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.guide-bento-card {
-  border: var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 4px 4px 0 var(--ink);
-  transition: transform 150ms ease, box-shadow 150ms ease;
+.guide-step-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+  margin-top: 18px;
 }
 
-.guide-bento-card:hover {
+.guide-step-card {
+  border: var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 4px 4px 0 var(--ink);
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.guide-step-card:hover {
   transform: translate(-3px, -3px);
   box-shadow: 7px 7px 0 var(--ink);
 }
 
-.guide-bento-card.card-yellow {
-  background: var(--yellow);
-  color: #171717;
-}
-
-.guide-bento-card.card-blue {
-  background: var(--blue);
-  color: #171717;
-}
-
-.guide-bento-card.card-green {
-  background: var(--green);
-  color: #171717;
-}
-
-.guide-bento-card.card-purple {
-  background: var(--purple);
-  color: #171717;
-}
-
-.guide-bento-card.card-orange {
-  background: var(--orange);
-  color: #171717;
-}
-
-[data-theme="dark"] .guide-bento-card {
+.step-badge {
+  font-family: "DM Mono", monospace;
+  font-size: 0.85rem;
+  font-weight: 800;
+  background: var(--ink);
   color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
 }
 
-[data-theme="dark"] .guide-bento-card.card-yellow {
-  background: #854d0e;
+[data-theme="dark"] .step-badge {
+  background: #000000;
+  color: #ffd60a;
 }
 
-[data-theme="dark"] .guide-bento-card.card-blue {
-  background: #1e3a8a;
+.step-content {
+  flex: 1;
 }
 
-[data-theme="dark"] .guide-bento-card.card-green {
-  background: #065f46;
-}
-
-[data-theme="dark"] .guide-bento-card.card-purple {
-  background: #581c87;
-}
-
-[data-theme="dark"] .guide-bento-card.card-orange {
-  background: #9a3412;
-}
-
-.guide-card-icon {
-  font-size: 1.8rem;
-  line-height: 1;
-}
-
-.guide-bento-card h4 {
-  margin: 0;
-  font-size: 1.05rem;
+.step-content h4 {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
-.guide-bento-card p {
+.step-content ul {
   margin: 0;
-  font-size: 0.85rem;
-  line-height: 1.45;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.step-content li {
+  font-size: 0.9rem;
+  line-height: 1.5;
   font-weight: 500;
 }
+
+.step-content code {
+  font-family: "DM Mono", monospace;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.guide-step-card.card-yellow {
+  background: var(--yellow);
+  color: #171717;
+}
+
+.guide-step-card.card-blue {
+  background: var(--blue);
+  color: #171717;
+}
+
+.guide-step-card.card-green {
+  background: var(--green);
+  color: #171717;
+}
+
+.guide-step-card.card-purple {
+  background: var(--purple);
+  color: #171717;
+}
+
+[data-theme="dark"] .guide-step-card {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .guide-step-card.card-yellow {
+  background: #854d0e;
+}
+
+[data-theme="dark"] .guide-step-card.card-blue {
+  background: #1e3a8a;
+}
+
+[data-theme="dark"] .guide-step-card.card-green {
+  background: #065f46;
+}
+
+[data-theme="dark"] .guide-step-card.card-purple {
+  background: #581c87;
+}
+
 
 
 

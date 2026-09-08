@@ -344,51 +344,65 @@
         <div class="modal-header-row">
           <div class="modal-icon-badge">📖</div>
           <div class="modal-header-text">
-            <h3 class="modal-title-main">웹사이트 이용 가이드</h3>
-            <p class="modal-desc-sub">주간 식당 룰렛 & 방문 달력 100% 활용법</p>
+            <h3 class="modal-title-main">쉬운 웹사이트 이용 가이드</h3>
+            <p class="modal-desc-sub">점심 룰렛 & 방문 달력 200% 활용법</p>
           </div>
           <button type="button" class="modal-close-x" onclick="closeGuideModal()" aria-label="닫기">&times;</button>
         </div>
 
-        <div class="guide-bento-grid">
-          <!-- Guide Card 1 -->
-          <div class="guide-bento-card card-yellow">
-            <div class="guide-card-icon">🎲</div>
-            <h4>1. 룰렛 & 가격 필터</h4>
-            <p>상단 가격 필터(전체 / 12,000원 이하 / 12,000원 초과)를 지정하고 <strong>🎲 룰렛 돌리기</strong>를 클릭하면 오늘의 점심 식당을 무작위로 추첨합니다.</p>
+        <div class="guide-step-container">
+          <!-- Step 1: 식당 등록 방법 -->
+          <div class="guide-step-card card-yellow">
+            <div class="step-badge">STEP 1</div>
+            <div class="step-content">
+              <h4>🍱 1. 식당 등록 및 관리하는 법</h4>
+              <ul>
+                <li><strong>식당 추가하기:</strong> 우측 하단 <strong>'식당 목록 관리'</strong> 양식에 [식당 이름], [카테고리], [가격], [대표 메뉴]를 입력하고 <strong>➕ 식당 추가</strong> 버튼을 누르세요.</li>
+                <li><strong>후보에서 제외하기:</strong> 등록된 식당 태그를 클릭하여 회색(비활성화)으로 만들면 룰렛 추첨 후보에서 제외됩니다.</li>
+                <li><strong>식당 정보 수정:</strong> 식당 태그를 마우스 오른쪽 클릭(또는 길게 누르기)하여 정보를 자유롭게 수정할 수 있습니다.</li>
+              </ul>
+            </div>
           </div>
 
-          <!-- Guide Card 2 -->
-          <div class="guide-bento-card card-blue">
-            <div class="guide-card-icon">🍱</div>
-            <h4>2. 식당 목록 관리</h4>
-            <p>식당을 새롭게 <strong>➕ 추가</strong>하거나, 원하지 않는 식당의 태그를 클릭해 선택 해제(비활성화)하면 룰렛 후보에서 제외할 수 있습니다.</p>
+          <!-- Step 2: 룰렛 돌리는 방법 -->
+          <div class="guide-step-card card-blue">
+            <div class="step-badge">STEP 2</div>
+            <div class="step-content">
+              <h4>🎲 2. 오늘의 점심 룰렛 돌리는 법</h4>
+              <ul>
+                <li><strong>가격 필터 선택:</strong> 룰렛 위쪽 <strong>💰 가격 필터</strong>(전체 / 12,000원 이하 / 12,000원 초과)를 골라 예산에 맞는 식당만 추려냅니다.</li>
+                <li><strong>룰렛 돌리기:</strong> 중앙의 <strong>'GO!'</strong> 버튼이나 하단의 <strong>🎲 룰렛 돌리기</strong> 버튼을 클릭하면 화려한 효과와 함께 오늘 점심 식당이 랜덤 선택됩니다!</li>
+              </ul>
+            </div>
           </div>
 
-          <!-- Guide Card 3 -->
-          <div class="guide-bento-card card-green">
-            <div class="guide-card-icon">📅</div>
-            <h4>3. 주간 라인업 & 휴무</h4>
-            <p>당첨된 식당이 이번 주 요일에 자동 등록되며, 요일 상자를 클릭해 <strong>직접 식당 수정</strong> 및 <strong>🏖️ 휴무일 지정</strong>이 가능합니다.</p>
+          <!-- Step 3: 주간 라인업 & 휴무일 -->
+          <div class="guide-step-card card-green">
+            <div class="step-badge">STEP 3</div>
+            <div class="step-content">
+              <h4>📅 3. 주간 라인업 & 휴무일 설정하는 법</h4>
+              <ul>
+                <li><strong>자동 저장:</strong> 룰렛으로 당첨된 식당은 이번 주 해당 요일에 자동으로 등록됩니다.</li>
+                <li><strong>직접 변경 & 휴무 지정:</strong> 요일 상자(월~금)를 클릭하면 <strong>원하는 식당으로 직접 변경</strong>하거나 <strong>🏖️ 휴무일</strong>로 지정할 수 있습니다.</li>
+              </ul>
+            </div>
           </div>
 
-          <!-- Guide Card 4 -->
-          <div class="guide-bento-card card-purple">
-            <div class="guide-card-icon">🗓️</div>
-            <h4>4. 월간 방문 달력</h4>
-            <p>방문한 식당과 휴무 기록이 <strong>월간 방문 달력</strong>에 자동 동기화되어 이전/다음 달 방문 이력을 한눈에 관리할 수 있습니다.</p>
-          </div>
-
-          <!-- Guide Card 5 -->
-          <div class="guide-bento-card card-orange">
-            <div class="guide-card-icon">☁️</div>
-            <h4>5. 실시간 DB 연동</h4>
-            <p>상단의 ⚡ <strong>DB 상태 바이트</strong>를 통해 Cloudflare 및 Supabase DB와의 실시간 동기화 상태를 한눈에 확인할 수 있습니다.</p>
+          <!-- Step 4: 월간 달력 -->
+          <div class="guide-step-card card-purple">
+            <div class="step-badge">STEP 4</div>
+            <div class="step-content">
+              <h4>🗓️ 4. 월간 방문 달력 보는 법</h4>
+              <ul>
+                <li><strong>방문 기록 자동 보관:</strong> 당첨된 식당과 휴무일 기록은 하단 <strong>월간 방문 달력</strong>에 차곡차곡 자동 저장됩니다.</li>
+                <li><strong>이전/다음 달 확인:</strong> <code>&lt;</code> <code>&gt;</code> 버튼을 눌러 지난달에 어떤 식당을 자주 갔는지 한눈에 확인할 수 있습니다.</li>
+              </ul>
+            </div>
           </div>
         </div>
 
         <div class="modal-actions-bar" style="margin-top: 1.5rem; justify-content: flex-end;">
-          <button type="button" class="btn-modal btn-modal-save" onclick="closeGuideModal()">확인 완료 👍</button>
+          <button type="button" class="btn-modal btn-modal-save" onclick="closeGuideModal()">알겠어요, 룰렛 돌리러 가기! 🎲</button>
         </div>
       </div>
     </div>

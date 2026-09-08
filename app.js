@@ -1299,6 +1299,28 @@ function closeWinnerModal() {
   }
 }
 
+function openGuideModal() {
+  const modal = document.getElementById("guideModal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    modal.style.setProperty("display", "flex", "important");
+    modal.style.setProperty("opacity", "1", "important");
+    modal.style.setProperty("pointer-events", "auto", "important");
+  }
+}
+
+function closeGuideModal() {
+  const modal = document.getElementById("guideModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.setProperty("display", "none", "important");
+    modal.style.setProperty("opacity", "0", "important");
+    modal.style.setProperty("pointer-events", "none", "important");
+  }
+}
+
+window.openGuideModal = openGuideModal;
+window.closeGuideModal = closeGuideModal;
 window.closeManualModal = closeManualModal;
 window.closeWinnerModal = closeWinnerModal;
 
@@ -1655,5 +1677,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  const guideModal = document.getElementById("guideModal");
+  if (guideModal) {
+    guideModal.addEventListener("click", (e) => {
+      if (e.target === guideModal) closeGuideModal();
+    });
+  }
+
+  // Global keydown for Escape key closing modals
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeGuideModal();
+      closeManualModal();
+      closeWinnerModal();
+      closeEditRestaurantModal();
+      hideDbModal();
+    }
+  });
 });
 

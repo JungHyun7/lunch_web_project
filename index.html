@@ -33,6 +33,9 @@
           <span class="status-dot"></span>
           <span id="dbStatusText">연결 중...</span>
         </div>
+        <button id="guideToggleBtn" class="bento-btn bento-btn-guide" onclick="openGuideModal()" title="웹사이트 이용 가이드">
+          <span>📖</span> <span>이용 가이드</span>
+        </button>
         <button id="themeToggleBtn" class="bento-btn bento-btn-secondary" title="다크/라이트 모드 전환">
           <span id="themeIcon">🌙</span> <span id="themeText">드림 모드</span>
         </button>
@@ -333,6 +336,60 @@
             <button type="submit" class="btn-modal btn-modal-save">수정 완료</button>
           </div>
         </form>
+      </div>
+    </div>
+    <!-- Website User Guide Modal -->
+    <div id="guideModal" class="modal-overlay hidden">
+      <div class="modal-card guide-modal-card">
+        <div class="modal-header-row">
+          <div class="modal-icon-badge">📖</div>
+          <div class="modal-header-text">
+            <h3 class="modal-title-main">웹사이트 이용 가이드</h3>
+            <p class="modal-desc-sub">주간 식당 룰렛 & 방문 달력 100% 활용법</p>
+          </div>
+          <button type="button" class="modal-close-x" onclick="closeGuideModal()" aria-label="닫기">&times;</button>
+        </div>
+
+        <div class="guide-bento-grid">
+          <!-- Guide Card 1 -->
+          <div class="guide-bento-card card-yellow">
+            <div class="guide-card-icon">🎲</div>
+            <h4>1. 룰렛 & 가격 필터</h4>
+            <p>상단 가격 필터(전체 / 12,000원 이하 / 12,000원 초과)를 지정하고 <strong>🎲 룰렛 돌리기</strong>를 클릭하면 오늘의 점심 식당을 무작위로 추첨합니다.</p>
+          </div>
+
+          <!-- Guide Card 2 -->
+          <div class="guide-bento-card card-blue">
+            <div class="guide-card-icon">🍱</div>
+            <h4>2. 식당 목록 관리</h4>
+            <p>식당을 새롭게 <strong>➕ 추가</strong>하거나, 원하지 않는 식당의 태그를 클릭해 선택 해제(비활성화)하면 룰렛 후보에서 제외할 수 있습니다.</p>
+          </div>
+
+          <!-- Guide Card 3 -->
+          <div class="guide-bento-card card-green">
+            <div class="guide-card-icon">📅</div>
+            <h4>3. 주간 라인업 & 휴무</h4>
+            <p>당첨된 식당이 이번 주 요일에 자동 등록되며, 요일 상자를 클릭해 <strong>직접 식당 수정</strong> 및 <strong>🏖️ 휴무일 지정</strong>이 가능합니다.</p>
+          </div>
+
+          <!-- Guide Card 4 -->
+          <div class="guide-bento-card card-purple">
+            <div class="guide-card-icon">🗓️</div>
+            <h4>4. 월간 방문 달력</h4>
+            <p>방문한 식당과 휴무 기록이 <strong>월간 방문 달력</strong>에 자동 동기화되어 이전/다음 달 방문 이력을 한눈에 관리할 수 있습니다.</p>
+          </div>
+
+          <!-- Guide Card 5 -->
+          <div class="guide-bento-card card-orange">
+            <div class="guide-card-icon">☁️</div>
+            <h4>5. 실시간 DB 연동</h4>
+            <p>상단의 ⚡ <strong>DB 상태 바이트</strong>를 통해 Cloudflare 및 Supabase DB와의 실시간 동기화 상태를 한눈에 확인할 수 있습니다.</p>
+          </div>
+        </div>
+
+        <div class="modal-actions-bar" style="margin-top: 1.5rem; justify-content: flex-end;">
+          <button type="button" class="btn-modal btn-modal-save" onclick="closeGuideModal()">확인 완료 👍</button>
+        </div>
       </div>
     </div>
   </div>

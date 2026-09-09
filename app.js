@@ -589,10 +589,14 @@ function renderWeeklyGrid() {
     } else {
       const name = typeof winnerData === 'string' ? winnerData : winnerData.name;
       const cat = typeof winnerData === 'object' ? winnerData.category : "";
-      const price = typeof winnerData === 'object' ? winnerData.price : 0;
+      const mainDish = typeof winnerData === 'object' ? (winnerData.mainDish || "") : "";
       
       valEl.textContent = name;
-      if (subEl) subEl.textContent = `${cat ? '['+cat+'] ' : ''}${price ? formatPrice(price) : ''}`;
+      if (subEl) {
+        const catStr = cat ? `[${cat}]` : "";
+        const dishStr = (mainDish && mainDish !== "없음") ? ` ${mainDish}` : "";
+        subEl.textContent = `${catStr}${dishStr}`;
+      }
       parentBox.classList.add("has-winner");
     }
   });

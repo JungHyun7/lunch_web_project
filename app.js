@@ -427,7 +427,10 @@ const SIMILAR_DISH_KEYWORDS = [
   "제육", "김치찌개", "돈까스", "돈카츠", "짜장", "짬뽕", "순대국", "초밥",
   "스시", "쌀국수", "비빔밥", "부대찌개", "된장찌개", "칼국수", "우동",
   "라멘", "카레", "국밥", "찌개", "덮밥", "파스타", "냉면", "마라탕",
-  "갈치조림", "생선구이", "조림", "보쌈", "삼계탕", "아구찜", "뷔페", "백반", "보리밥", "육개장", "짜글이", "두루치기"
+  "갈치조림", "생선구이", "조림", "보쌈", "삼계탕", "아구찜", "뷔페", "백반",
+  "보리밥", "육개장", "짜글이", "두루치기", "텐동", "소바", "순두부", "오삼불고기",
+  "햄버거", "버거", "갈비탕", "게장", "간장게장", "수제비", "불고기", "삼겹살",
+  "꼬막비빔밥", "전복삼계탕", "구이", "찜", "정식"
 ];
 
 function extractDishKeywords(dishText) {
@@ -448,16 +451,59 @@ function extractDishKeywords(dishText) {
   return found;
 }
 
+// Get dates for Mon ~ Fri of Previous Week
+function getPreviousWeekDates() {
+  const now = new Date();
+  const currentDay = now.getDay();
+  const distanceToMon = currentDay === 0 ? -6 : 1 - currentDay;
+  
+  const thisMonday = new Date(now);
+  thisMonday.setDate(now.getDate() + distanceToMon);
+
+  const prevMonday = new Date(thisMonday);
+  prevMonday.setDate(thisMonday.getDate() - 7);
+
+  const prevDates = [];
+  for (let i = 0; i < 5; i++) {
+    const d = new Date(prevMonday);
+    d.setDate(prevMonday.getDate() + i);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const date = String(d.getDate()).padStart(2, '0');
+    prevDates.push(`${year}-${month}-${date}`);
+  }
+
+  return prevDates;
+}
+
 function getAvailableCandidates() {
   // 0. Filter out restaurants that are unselected (체크 해제된 식당 제외)
   let candidates = restaurants.filter(item => item.selected !== false);
 
-  // 1. Filter out restaurants already won or assigned this week
+  // 1. Filter out restaurants already won or assigned THIS week
   const usedWinnerNames = Object.values(weeklyWinners)
     .filter(val => val && val.type !== "holiday")
     .map(val => (typeof val === 'string' ? val : val.name));
 
   candidates = candidates.filter(item => !usedWinnerNames.includes(item.name));
+
+  // 1.5. Filter out restaurants visited LAST week (지난주 다녀온 식당 쿨다운 제외)
+  const prevWeekDates = getPreviousWeekDates();
+  const prevWeekWinnerNames = [];
+
+  prevWeekDates.forEach(isoDate => {
+    const historyRec = monthlyHistory[isoDate];
+    if (historyRec && historyRec.type !== "holiday") {
+      const rName = historyRec.restaurantName || historyRec.name;
+      if (rName) prevWeekWinnerNames.push(rName);
+    }
+  });
+
+  // If filtering last week's restaurants leaves at least 3 candidates, apply cooldown filter
+  const candidatesWithoutLastWeek = candidates.filter(item => !prevWeekWinnerNames.includes(item.name));
+  if (candidatesWithoutLastWeek.length >= 3) {
+    candidates = candidatesWithoutLastWeek;
+  }
 
   // 2. Price Filter Condition (12,000원 기준)
   if (priceFilter === "under12k") {

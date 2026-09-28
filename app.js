@@ -236,8 +236,17 @@ function applyFirebaseData(data) {
     syncToFirebase();
   }
 
-  // 2. Weekly winners processing
-  if (data.weeklyWinners) {
+  // 2. Weekly winners & Week key processing with Cloud Auto-Reset
+  const currentWeek = getWeekKey();
+  const dbSavedWeek = data.savedWeekKey;
+
+  if (dbSavedWeek && dbSavedWeek !== currentWeek) {
+    // Week has changed on Cloud! Reset weekly winners for the new week
+    weeklyWinners = { Mon: null, Tue: null, Wed: null, Thu: null, Fri: null };
+    localStorage.setItem(STORAGE_KEY_WEEK, currentWeek);
+    localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
+    syncToFirebase();
+  } else if (data.weeklyWinners) {
     weeklyWinners = data.weeklyWinners;
     localStorage.setItem(STORAGE_KEY_WINNERS, JSON.stringify(weeklyWinners));
   } else if (data.hasSynced) {
@@ -339,6 +348,7 @@ function syncToFirebase() {
     restaurants: (restaurants && restaurants.length > 0) ? restaurants : ["__EMPTY_MARKER__"],
     weeklyWinners: weeklyWinners || { Mon: null, Tue: null, Wed: null, Thu: null, Fri: null },
     monthlyHistory: monthlyHistory || {},
+    savedWeekKey: getWeekKey(),
     hasSynced: true,
     updatedAt: Date.now()
   };

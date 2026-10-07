@@ -1075,14 +1075,10 @@ function updateSpinBtnText(text) {
 
 function onSpinComplete(winnerObject) {
   const { weekDates } = getWeekDates();
-  let targetDay = getTodayDayKey();
+  // 오늘 돌린 룰렛은 이번 주 다른 요일로 안 가고 무조건 오늘 요일(getTodayDayKey)에만 적용!
+  const targetDay = getTodayDayKey();
 
-  if (weeklyWinners[targetDay]) {
-    const emptyDay = DAYS.find(day => !weeklyWinners[day]);
-    if (emptyDay) targetDay = emptyDay;
-  }
-
-  // Store winner in weekly state
+  // Store winner in weekly state for TODAY only
   weeklyWinners[targetDay] = {
     type: "winner",
     name: winnerObject.name,

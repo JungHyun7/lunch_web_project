@@ -26,6 +26,21 @@ const SECTOR_COLORS = [
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
 // ==========================================================================
+// 🔒 [마스터 설정] 식당별 정기휴무 요일
+// --------------------------------------------------------------------------
+// - 화면에는 표시되지 않으며, 여기서만 수정합니다.
+// - 키: 식당 이름 (식당 목록에 등록된 이름과 정확히 같아야 함)
+// - 값: 휴무 요일 배열 → "Mon" "Tue" "Wed" "Thu" "Fri"
+// - 오늘 요일이 휴무로 지정된 식당은 오늘 룰렛 후보에서 자동 제외됩니다.
+// 예시)
+//   "오봉집": ["Mon"],            // 매주 월요일 휴무
+//   "스시타운": ["Tue", "Wed"],   // 매주 화·수 휴무
+// ==========================================================================
+const RESTAURANT_CLOSED_DAYS = {
+  // "식당이름": ["Mon"],
+};
+
+// ==========================================================================
 // Application State Management
 // ==========================================================================
 let restaurants = [];
@@ -479,6 +494,13 @@ function getPreviousWeekDates() {
 function getAvailableCandidates() {
   // 0. Filter out restaurants that are unselected (체크 해제된 식당 제외)
   let candidates = restaurants.filter(item => item.selected !== false);
+
+  // 0.5. 정기휴무 식당 제외 (오늘 요일이 휴무인 식당은 후보에서 빠짐)
+  const todayDayKey = getTodayDayKey();
+  candidates = candidates.filter(item => {
+    const closedDays = RESTAURANT_CLOSED_DAYS[item.name];
+    return !(Array.isArray(closedDays) && closedDays.includes(todayDayKey));
+  });
 
   // 1. Filter out restaurants already won or assigned THIS week
   const usedWinnerNames = Object.values(weeklyWinners)
